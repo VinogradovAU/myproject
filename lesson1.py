@@ -6,5 +6,6 @@ while num <=10:
     print(num)
     num = num + 1
 print('end program')
-print ('2222222')
+print('2222222')
+print('Изменение 2')
 
