@@ -10,7 +10,7 @@
 
 print("Задание 2")
 
-my_list = [1, 6, 5, 2, 10, 12, 16, 3, 0]
+my_list = [1, 6, 5, 2, 10, 12, 16, 3, 5]
 
 new_list = [x for i, x in enumerate(my_list) if x > my_list[i - 1]]
 
