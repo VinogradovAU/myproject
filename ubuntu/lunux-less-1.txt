@@ -101,5 +101,41 @@ cp /home/ezh/.ssh/id_rsa.pub /home/ezh/.ssh/Authrized_keys
 --Даалее в Putty нажал кнопку Open и подключился к ubuntu без ввода учетных данных.
 
 
+1. Ты случайно обнаружил, что пользователь root подключиться по ssh не может.
+Надо разобраться, и сделать так, чтобы пользователь root мог подключаться по ssh к машине с Ubuntu.
+
+- в ubuntu создаем пароль для root
+passwd root
+ - далее правим конфиг
+nano /etc/ssh/sshd_config
+ - раскомментируем строчку
+PermitRootLogin yes
+ - перезагрузка sshd
+ systemctl restart sshd
+ - далее подключение из Putty к ubuntu c указанием пользователя root
+ - работает.
+
+login as: root
+root@192.168.56.101's password:
+Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.3.0-40-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+
+ * Canonical Livepatch is available for installation.
+   - Reduce system reboots and improve kernel security. Activate at:
+     https://ubuntu.com/livepatch
+
+3 packages can be updated.
+0 updates are security updates.
+
+Your Hardware Enablement Stack (HWE) is supported until April 2023.
+Last login: Wed Feb 19 02:07:38 2020 from 192.168.56.1
+
+
+
+
 
 
