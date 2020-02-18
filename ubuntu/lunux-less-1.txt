@@ -1,0 +1,105 @@
+1. https://github.com/VinogradovAU/myproject
+
+2. Установил ubuntu на VirtualBox
+
+ezh@ezh-VirtualBox:~$ ls --time-style=long-iso -clt / | tail -n 1 | awk '{ print $7, $6}'
+20:24 2020-02-17
+2. ezh@ezh-VirtualBox:~$ uname -a
+Linux ezh-VirtualBox 5.0.0-23-generic #24~18.04.1-Ubuntu SMP Mon Jul 29 16:12:28 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+3.
+-- монтирование оптического диска с guest additions
+ezh@ezh-VirtualBox:~$ sudo mount /dev/sr0  /media/ezh/iso
+[sudo] password for ezh:
+mount: /media/ezh/iso: WARNING: device write-protected, mounted read-only.
+
+
+ezh@ezh-VirtualBox:~$ mount | grep sr0
+/dev/sr0 on /media/ezh/VBox_GAs_6.1.2 type iso9660 (ro,nosuid,nodev,relatime,nojoliet,check=s,map=n,blocksize=2048,
+uid=1000,gid=1000,dmode=500,fmode=400,uhelper=udisks2)
+
+-- запуска установки virtualbox гостевых дополнений
+
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo ./autorun.sh
+Verifying archive integrity... All good.
+Uncompressing VirtualBox 6.1.2 Guest Additions for Linux........
+VirtualBox Guest Additions installer
+Removing installed version 6.1.2 of VirtualBox Guest Additions...
+Copying additional installer modules ...
+Installing additional modules ...
+VirtualBox Guest Additions: Starting.
+VirtualBox Guest Additions: Building the VirtualBox Guest Additions kernel
+modules.  This may take a while.
+VirtualBox Guest Additions: To build modules for other installed kernels, run
+VirtualBox Guest Additions:   /sbin/rcvboxadd quicksetup <version>
+VirtualBox Guest Additions: or
+VirtualBox Guest Additions:   /sbin/rcvboxadd quicksetup all
+VirtualBox Guest Additions: Building the modules for kernel 5.0.0-23-generic.
+
+This system is currently not set up to build kernel modules.
+Please install the gcc make perl packages from your distribution.
+VirtualBox Guest Additions: Running kernel modules will not be replaced until
+the system is restarted
+Press Return to close this window...
+
+-- установка недостоющих зависимостей gcc make perl
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo apt-get install gcc make perl
+Reading package lists... Done
+Building dependency tree
+Reading state information...
+....
+Processing triggers for libc-bin (2.27-3ubuntu1) ...
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo ./autorun.sh
+update-initramfs: Generating /boot/initrd.img-5.0.0-23-generic
+VirtualBox Guest Additions: Running kernel modules will not be replaced until
+the system is restarted
+Press Return to close this window...
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo reboot
+sudo apt-get upgrade
+
+drag and drop из системы в систему работает
+
+4. В конфигурации виртуальной машины включить "общий буфер". Заменить NAT сетевой интерфейс на Bridged (либо на Windows добавить еще один internal интерфейс)
+В настройках VirtualBox -> Адаптер 2
+Тип подключения: Виртуальный адаптер хоста.
+Имя: VirtualBox Host-Only Ethernet Adapter
+
+5. Настроить ssh соединение с хостовой ОС на гостевую ОС с использованием ssh ключа и написать команды для:
+
+- установки ssh сервер
+
+ezh@ezh-VirtualBox:~$ sudo apt-get install openssh-server
+[sudo] password for ezh:
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+openssh-server is already the newest version (1:7.6p1-4ubuntu0.3).
+The following packages were automatically installed and are no longer required:
+  gir1.2-geocodeglib-1.0 ubuntu-web-launchers
+Use 'sudo apt autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+
+
+-- открытие справки для команды ufw
+ezh@ezh-VirtualBox:~$ man ufw
+ezh@ezh-VirtualBox:~$ ufw -h
+
+-- включение службы ssh сервера
+sudo systemctl start sshd
+
+-- добавления порта 22 в исключения фаервола
+sudo ufw allow 22
+
+-- генерации ssh ключа
+sudo ssh-keygen
+ezh@ezh-VirtualBox:~/.ssh$ ssh-keygen
+ezh@ezh-VirtualBox:~/.ssh$ cat /home/ezh/.ssh/id_rsa
+-- скопировал ключ id_rsa в win ОС, загрузил через PuttyGen
+-- в putty указал IP , имя пользователя, и файл ключа
+-- в ubuntu скопировал id_ras.pub в Authrized_keys
+cp /home/ezh/.ssh/id_rsa.pub /home/ezh/.ssh/Authrized_keys
+--Даалее в Putty нажал кнопку Open и подключился к ubuntu без ввода учетных данных.
+
+
+
+
