@@ -264,3 +264,8 @@ Description: Landscape administration system client - Common files
 
 N: There is 1 additional record. Please use the '-a' switch to see it
 
+5. список файлов пакета
+
+apt-file list landscape-common
+# поиск файла в списке
+apt-file list landscape-common | grep filename
