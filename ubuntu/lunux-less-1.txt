@@ -134,8 +134,133 @@ Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.3.0-40-generic x86_64)
 Your Hardware Enablement Stack (HWE) is supported until April 2023.
 Last login: Wed Feb 19 02:07:38 2020 from 192.168.56.1
 
+2. при подключении по ssh ДО ввода пароля пользователю выводится сообщение о том,
+что символы, которые он вводит не будут отображаться:
+
+создаем файл и пишем в него <<< WARNING >>>
+nano /etc/ssh/ssh_banner
+nano /etc/ssh/sshd_config
+добавляю в файл
+Banner /etc/ssh/ssh_banner
+systemctl restart sshd
 
 
+3.
+# установил пакеты
+$ sudo apt install inxi screenfetch ansiweather
+# отключил стандартные скрипты
+chmod -x /etc/update-motd.d/*
+# перешел в дирректорию
+cd /etc/update-motd.d/
+# создал свой скрипт для вывода информации в консоли
+nano 01-custom.sh
+    #!/bin/sh
+    echo "GENERAL SYSTEM INFORMATION"
+    /usr/bin/screenfetch
+    echo
+    echo "SYSTEM DISK USAGE"
+    export TERM=xterm; inxi -D
+    echo
+    echo "CURRENT WEATHER AT THE LOCATION"
+    # Show weather information. Change the city name to fit your location
+    ansiweather -l Moscow
+
+# сделал скрипт запускаемый
+chmod +x 01-custom.sh
+
+4. как узнать какому пакету принадлежит файл
+sudo apt-get install apt-file
+sudo apt-file update
+ezh@ezh-VirtualBox:/$ apt-file search landscape-sysinfo
+landscape-common: /usr/bin/landscape-sysinfo
+landscape-common: /usr/share/landscape/landscape-sysinfo.wrapper
+landscape-common: /usr/share/man/man1/landscape-sysinfo.1.gz
+
+# или
+ezh@ezh-VirtualBox:/$ apt search landscape-sysinfo
+Sorting... Done
+Full Text Search... Done
+landscape-common/bionic-updates 18.01-0ubuntu3.4 amd64
+  Landscape administration system client - Common files
+sudo apt install landscape-common
 
 
+#информация о пакете
+sudo apt-get aptitude
+
+ezh@ezh-VirtualBox:/$ aptitude show ansiweather
+Package: ansiweather
+Version: 1.11-1
+State: installed
+Automatically installed: no
+Multi-Arch: foreign
+Priority: extra
+Section: universe/utils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Uncompressed Size: 32,8 k
+Depends: curl, bc, jq
+Description: Weather in your terminal, with ANSI colors and Unicode symbols
+ AnsiWeather is a Shell script for displaying the current weather conditions in
+ your terminal, with support for ANSI colors and Unicode symbols.
+
+ Weather data comes from OpenWeatherMap, free weather API.
+Homepage: https://github.com/fcambus/ansiweather
+
+# еще так
+
+ezh@ezh-VirtualBox:/$ apt show ansiweather
+Package: ansiweather
+Version: 1.11-1
+Priority: extra
+Section: universe/utils
+Origin: Ubuntu
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Javier Fafian Alvarez <fafian@gmail.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 32,8 kB
+Depends: curl, bc, jq
+Homepage: https://github.com/fcambus/ansiweather
+Download-Size: 10,4 kB
+APT-Manual-Installed: yes
+APT-Sources: http://ru.archive.ubuntu.com/ubuntu bionic/universe amd64 Packages
+Description: Weather in your terminal, with ANSI colors and Unicode symbols
+ AnsiWeather is a Shell script for displaying the current
+ weather conditions in your terminal, with support for
+ ANSI colors and Unicode symbols.
+ .
+ Weather data comes from OpenWeatherMap, free weather API.
+
+# -------------
+
+apt show landscape-common
+Package: landscape-common
+Version: 18.01-0ubuntu3.4
+Priority: optional
+Section: admin
+Source: landscape-client
+Origin: Ubuntu
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Landscape Team <landscape-team@canonical.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 406 kB
+Depends: python3:any (>= 3.5~), debconf (>= 0.5) | debconf-2.0, python3-twisted, python3-configobj, python3-apt,
+ca-certificates, python3-gdbm, lsb-release, lsb-base, adduser, bc, lshw, libpam-modules
+Breaks: landscape-client-ui (<< 16.04), landscape-client-ui-install (<< 16.04)
+Replaces: landscape-client-ui (<< 16.04), landscape-client-ui-install (<< 16.04)
+Task: cloud-image, server
+Supported: 5y
+Download-Size: 85,4 kB
+APT-Manual-Installed: yes
+APT-Sources: http://ru.archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages
+Description: Landscape administration system client - Common files
+ Landscape is a web-based tool for managing Ubuntu systems. This
+ package is necessary if you want your machine to be managed in a
+ Landscape account.
+ .
+ This package provides the core libraries, as well as the landscape-sysinfo
+ command.  It also sets up the landscape user, landscape directories, and the
+ hook that runs landscape-sysinfo on startup.
+
+N: There is 1 additional record. Please use the '-a' switch to see it
 
