@@ -1,0 +1,271 @@
+1. https://github.com/VinogradovAU/myproject
+
+2. Установил ubuntu на VirtualBox
+
+ezh@ezh-VirtualBox:~$ ls --time-style=long-iso -clt / | tail -n 1 | awk '{ print $7, $6}'
+20:24 2020-02-17
+2. ezh@ezh-VirtualBox:~$ uname -a
+Linux ezh-VirtualBox 5.0.0-23-generic #24~18.04.1-Ubuntu SMP Mon Jul 29 16:12:28 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+3.
+-- монтирование оптического диска с guest additions
+ezh@ezh-VirtualBox:~$ sudo mount /dev/sr0  /media/ezh/iso
+[sudo] password for ezh:
+mount: /media/ezh/iso: WARNING: device write-protected, mounted read-only.
+
+
+ezh@ezh-VirtualBox:~$ mount | grep sr0
+/dev/sr0 on /media/ezh/VBox_GAs_6.1.2 type iso9660 (ro,nosuid,nodev,relatime,nojoliet,check=s,map=n,blocksize=2048,
+uid=1000,gid=1000,dmode=500,fmode=400,uhelper=udisks2)
+
+-- запуска установки virtualbox гостевых дополнений
+
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo ./autorun.sh
+Verifying archive integrity... All good.
+Uncompressing VirtualBox 6.1.2 Guest Additions for Linux........
+VirtualBox Guest Additions installer
+Removing installed version 6.1.2 of VirtualBox Guest Additions...
+Copying additional installer modules ...
+Installing additional modules ...
+VirtualBox Guest Additions: Starting.
+VirtualBox Guest Additions: Building the VirtualBox Guest Additions kernel
+modules.  This may take a while.
+VirtualBox Guest Additions: To build modules for other installed kernels, run
+VirtualBox Guest Additions:   /sbin/rcvboxadd quicksetup <version>
+VirtualBox Guest Additions: or
+VirtualBox Guest Additions:   /sbin/rcvboxadd quicksetup all
+VirtualBox Guest Additions: Building the modules for kernel 5.0.0-23-generic.
+
+This system is currently not set up to build kernel modules.
+Please install the gcc make perl packages from your distribution.
+VirtualBox Guest Additions: Running kernel modules will not be replaced until
+the system is restarted
+Press Return to close this window...
+
+-- установка недостоющих зависимостей gcc make perl
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo apt-get install gcc make perl
+Reading package lists... Done
+Building dependency tree
+Reading state information...
+....
+Processing triggers for libc-bin (2.27-3ubuntu1) ...
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo ./autorun.sh
+update-initramfs: Generating /boot/initrd.img-5.0.0-23-generic
+VirtualBox Guest Additions: Running kernel modules will not be replaced until
+the system is restarted
+Press Return to close this window...
+ezh@ezh-VirtualBox:/media/ezh/iso$ sudo reboot
+sudo apt-get upgrade
+
+drag and drop из системы в систему работает
+
+4. В конфигурации виртуальной машины включить "общий буфер". Заменить NAT сетевой интерфейс на Bridged (либо на Windows добавить еще один internal интерфейс)
+В настройках VirtualBox -> Адаптер 2
+Тип подключения: Виртуальный адаптер хоста.
+Имя: VirtualBox Host-Only Ethernet Adapter
+
+5. Настроить ssh соединение с хостовой ОС на гостевую ОС с использованием ssh ключа и написать команды для:
+
+- установки ssh сервер
+
+ezh@ezh-VirtualBox:~$ sudo apt-get install openssh-server
+[sudo] password for ezh:
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+openssh-server is already the newest version (1:7.6p1-4ubuntu0.3).
+The following packages were automatically installed and are no longer required:
+  gir1.2-geocodeglib-1.0 ubuntu-web-launchers
+Use 'sudo apt autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+
+
+-- открытие справки для команды ufw
+ezh@ezh-VirtualBox:~$ man ufw
+ezh@ezh-VirtualBox:~$ ufw -h
+
+-- включение службы ssh сервера
+sudo systemctl start sshd
+
+-- добавления порта 22 в исключения фаервола
+sudo ufw allow 22
+
+-- генерации ssh ключа
+sudo ssh-keygen
+ezh@ezh-VirtualBox:~/.ssh$ ssh-keygen
+ezh@ezh-VirtualBox:~/.ssh$ cat /home/ezh/.ssh/id_rsa
+-- скопировал ключ id_rsa в win ОС, загрузил через PuttyGen
+-- в putty указал IP , имя пользователя, и файл ключа
+-- в ubuntu скопировал id_ras.pub в Authrized_keys
+cp /home/ezh/.ssh/id_rsa.pub /home/ezh/.ssh/Authrized_keys
+--Даалее в Putty нажал кнопку Open и подключился к ubuntu без ввода учетных данных.
+
+
+1. Ты случайно обнаружил, что пользователь root подключиться по ssh не может.
+Надо разобраться, и сделать так, чтобы пользователь root мог подключаться по ssh к машине с Ubuntu.
+
+- в ubuntu создаем пароль для root
+passwd root
+ - далее правим конфиг
+nano /etc/ssh/sshd_config
+ - раскомментируем строчку
+PermitRootLogin yes
+ - перезагрузка sshd
+ systemctl restart sshd
+ - далее подключение из Putty к ubuntu c указанием пользователя root
+ - работает.
+
+login as: root
+root@192.168.56.101's password:
+Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.3.0-40-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+
+ * Canonical Livepatch is available for installation.
+   - Reduce system reboots and improve kernel security. Activate at:
+     https://ubuntu.com/livepatch
+
+3 packages can be updated.
+0 updates are security updates.
+
+Your Hardware Enablement Stack (HWE) is supported until April 2023.
+Last login: Wed Feb 19 02:07:38 2020 from 192.168.56.1
+
+2. при подключении по ssh ДО ввода пароля пользователю выводится сообщение о том,
+что символы, которые он вводит не будут отображаться:
+
+создаем файл и пишем в него <<< WARNING >>>
+nano /etc/ssh/ssh_banner
+nano /etc/ssh/sshd_config
+добавляю в файл
+Banner /etc/ssh/ssh_banner
+systemctl restart sshd
+
+
+3.
+# установил пакеты
+$ sudo apt install inxi screenfetch ansiweather
+# отключил стандартные скрипты
+chmod -x /etc/update-motd.d/*
+# перешел в дирректорию
+cd /etc/update-motd.d/
+# создал свой скрипт для вывода информации в консоли
+nano 01-custom.sh
+    #!/bin/sh
+    echo "GENERAL SYSTEM INFORMATION"
+    /usr/bin/screenfetch
+    echo
+    echo "SYSTEM DISK USAGE"
+    export TERM=xterm; inxi -D
+    echo
+    echo "CURRENT WEATHER AT THE LOCATION"
+    # Show weather information. Change the city name to fit your location
+    ansiweather -l Moscow
+
+# сделал скрипт запускаемый
+chmod +x 01-custom.sh
+
+4. как узнать какому пакету принадлежит файл
+sudo apt-get install apt-file
+sudo apt-file update
+ezh@ezh-VirtualBox:/$ apt-file search landscape-sysinfo
+landscape-common: /usr/bin/landscape-sysinfo
+landscape-common: /usr/share/landscape/landscape-sysinfo.wrapper
+landscape-common: /usr/share/man/man1/landscape-sysinfo.1.gz
+
+# или
+ezh@ezh-VirtualBox:/$ apt search landscape-sysinfo
+Sorting... Done
+Full Text Search... Done
+landscape-common/bionic-updates 18.01-0ubuntu3.4 amd64
+  Landscape administration system client - Common files
+sudo apt install landscape-common
+
+
+#информация о пакете
+sudo apt-get aptitude
+
+ezh@ezh-VirtualBox:/$ aptitude show ansiweather
+Package: ansiweather
+Version: 1.11-1
+State: installed
+Automatically installed: no
+Multi-Arch: foreign
+Priority: extra
+Section: universe/utils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Uncompressed Size: 32,8 k
+Depends: curl, bc, jq
+Description: Weather in your terminal, with ANSI colors and Unicode symbols
+ AnsiWeather is a Shell script for displaying the current weather conditions in
+ your terminal, with support for ANSI colors and Unicode symbols.
+
+ Weather data comes from OpenWeatherMap, free weather API.
+Homepage: https://github.com/fcambus/ansiweather
+
+# еще так
+
+ezh@ezh-VirtualBox:/$ apt show ansiweather
+Package: ansiweather
+Version: 1.11-1
+Priority: extra
+Section: universe/utils
+Origin: Ubuntu
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Javier Fafian Alvarez <fafian@gmail.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 32,8 kB
+Depends: curl, bc, jq
+Homepage: https://github.com/fcambus/ansiweather
+Download-Size: 10,4 kB
+APT-Manual-Installed: yes
+APT-Sources: http://ru.archive.ubuntu.com/ubuntu bionic/universe amd64 Packages
+Description: Weather in your terminal, with ANSI colors and Unicode symbols
+ AnsiWeather is a Shell script for displaying the current
+ weather conditions in your terminal, with support for
+ ANSI colors and Unicode symbols.
+ .
+ Weather data comes from OpenWeatherMap, free weather API.
+
+# -------------
+
+apt show landscape-common
+Package: landscape-common
+Version: 18.01-0ubuntu3.4
+Priority: optional
+Section: admin
+Source: landscape-client
+Origin: Ubuntu
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Landscape Team <landscape-team@canonical.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 406 kB
+Depends: python3:any (>= 3.5~), debconf (>= 0.5) | debconf-2.0, python3-twisted, python3-configobj, python3-apt,
+ca-certificates, python3-gdbm, lsb-release, lsb-base, adduser, bc, lshw, libpam-modules
+Breaks: landscape-client-ui (<< 16.04), landscape-client-ui-install (<< 16.04)
+Replaces: landscape-client-ui (<< 16.04), landscape-client-ui-install (<< 16.04)
+Task: cloud-image, server
+Supported: 5y
+Download-Size: 85,4 kB
+APT-Manual-Installed: yes
+APT-Sources: http://ru.archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages
+Description: Landscape administration system client - Common files
+ Landscape is a web-based tool for managing Ubuntu systems. This
+ package is necessary if you want your machine to be managed in a
+ Landscape account.
+ .
+ This package provides the core libraries, as well as the landscape-sysinfo
+ command.  It also sets up the landscape user, landscape directories, and the
+ hook that runs landscape-sysinfo on startup.
+
+N: There is 1 additional record. Please use the '-a' switch to see it
+
+5. список файлов пакета
+
+apt-file list landscape-common
+# поиск файла в списке
+apt-file list landscape-common | grep filename
