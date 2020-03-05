@@ -33,8 +33,13 @@ if [ $1 == "-d" ]; then
                 done
 
 else
-        echo 'key for directory empty'
-  for el in $@
+          echo 'key for directory empty'
+
+        for el in $@
                 do
                    [ -f $el ]&&echo 'the file exists' && Usage && exit 2
                    [ -f $el ]||touch "$(pwd)/$el" && echo 'file create ok'
+
+                   ls $(pwd)|grep '$el'.sh &&chmod +x $el ||echo 'error change permision'
+                done
+fi
