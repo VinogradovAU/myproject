@@ -1,0 +1,571 @@
+1. Просмотреть содержимое директорий /etc, /proc, /home. Посмотреть пару произвольных файлов в /etc.
+ezh@ezh-VirtualBox:~$ ls /proc/
+ezh@ezh-VirtualBox:~$ ls /etc/
+ezh@ezh-VirtualBox:~$ ls /home/
+ezh@ezh-VirtualBox:~$ ls -la /etc
+ezh@ezh-VirtualBox:~$ cat /etc/login.defs
+ezh@ezh-VirtualBox:~$ cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sda1 during installation
+UUID=b0978e2c-b465-470a-ae54-223b2afc89bb /               ext4    errors=remount-ro 0       1
+/swapfile                                 none            swap    sw              0       0
+ezh@ezh-VirtualBox:~$
+
+
+2. Выяснить, для чего предназначена команда cat. Используя данную команду, создайте два файла с данными,
+а затем объедините их в один. Просмотрите содержимое созданного файла. Переименуйте файл, дав ему новое имя.
+ezh@ezh-VirtualBox:~$ man cat
+ezh@ezh-VirtualBox:~$ cat --help
+ezh@ezh-VirtualBox:~/test$ cat > file1
+information from file1
+далее Ctrl+D
+ezh@ezh-VirtualBox:~/test$ cat > file2
+information from file2
+далее Ctrl+D
+ezh@ezh-VirtualBox:~/test$ cat file1 file2
+information from file1
+info from file2
+ezh@ezh-VirtualBox:~/test$
+ezh@ezh-VirtualBox:~/test$ cat file1 file2 > file3
+ezh@ezh-VirtualBox:~/test$ ls
+file1  file2  file3
+ezh@ezh-VirtualBox:~/test$ cat file3
+information from file1
+info from file2
+
+ezh@ezh-VirtualBox:~/test$ cat file3 > file4
+ezh@ezh-VirtualBox:~/test$ ls
+file1  file2  file3  file4
+ezh@ezh-VirtualBox:~/test$ rm  file3
+ezh@ezh-VirtualBox:~/test$ ls
+file1  file2  file4
+ezh@ezh-VirtualBox:~/test$ cat file4
+information from file1
+info from file2
+
+
+
+3. Создать несколько файлов. Создайте директорию, переместите файл туда. Удалите все созданные в этом и
+предыдущем задании директории и файлы.
+ezh@ezh-VirtualBox:~/test$ cat > file5
+info from file5
+ezh@ezh-VirtualBox:~/test$ ls
+file1  file2  file3  file4  file5
+ezh@ezh-VirtualBox:~/test$ cat > file6
+info from file6
+ezh@ezh-VirtualBox:~/test$ ls
+file1  file2  file3  file4  file5  file6
+ezh@ezh-VirtualBox:~/test$
+ezh@ezh-VirtualBox:~/test$ cd ..
+ezh@ezh-VirtualBox:~$ tree
+.
+├── Desktop
+├── Documents
+├── Downloads
+├── examples.desktop
+├── Music
+├── Pictures
+├── Public
+├── Templates
+├── test
+│   ├── file1
+│   ├── file2
+│   ├── file3
+│   ├── file4
+│   ├── file5
+│   └── file6
+└── Videos
+
+9 directories, 7 files
+ezh@ezh-VirtualBox:~$
+ezh@ezh-VirtualBox:~$ ls
+Desktop    Downloads         Music     Public     test
+Documents  examples.desktop  Pictures  Templates  Videos
+ezh@ezh-VirtualBox:~$ rm -r ./test
+ezh@ezh-VirtualBox:~$ ls
+Desktop    Downloads         Music     Public     Videos
+Documents  examples.desktop  Pictures  Templates
+ezh@ezh-VirtualBox:~$
+
+
+
+4. В ОС Linux скрытыми файлами считаются те, имена которых начинаются с символа “.”. Сколько скрытых файлов в
+вашем домашнем каталоге? (Использовать конвейер. Подсказка: для подсчета количества строк можно использовать wc).
+ezh@ezh-VirtualBox:~$ ls -a
+.              Downloads         .python_history
+..             examples.desktop  .ssh
+.bash_history  .gnupg            .sudo_as_admin_successful
+.bash_logout   .gvfs             Templates
+.bashrc        .ICEauthority     .vboxclient-clipboard.pid
+.cache         .local            .vboxclient-display.pid
+.config        Music             .vboxclient-draganddrop.pid
+.dbus          Pictures          .vboxclient-seamless.pid
+Desktop        .profile          Videos
+Documents      Public
+ezh@ezh-VirtualBox:~$ find -maxdepth 1 -type f -name '[.]*'
+./.vboxclient-draganddrop.pid
+./.python_history
+./.bash_history
+./.bashrc
+./.profile
+./.vboxclient-clipboard.pid
+./.bash_logout
+./.sudo_as_admin_successful
+./.vboxclient-display.pid
+./.vboxclient-seamless.pid
+./.ICEauthority
+ezh@ezh-VirtualBox:~$ find -maxdepth 1 -type f -name '[.]*' | wc -l
+11
+
+5. Попробовать вывести с помощью cat все файлы в директории /etc. Направить ошибки в отдельный файл в вашей домашней
+директории. Сколько файлов, которые не удалось посмотреть, оказалось в списке?
+
+
+ezh@ezh-VirtualBox:~/test$ touch file1
+ezh@ezh-VirtualBox:~/test$ ls
+file1
+ezh@ezh-VirtualBox:~/test$ cat file1
+ezh@ezh-VirtualBox:~/test$
+ezh@ezh-VirtualBox:~/test$ find /etc -maxdepth 1 -type f | xargs cat || echo 'error---cat ' >> file1
+ezh@ezh-VirtualBox:~/test$ cat file1
+error---cat
+ezh@ezh-VirtualBox:~/test$
+ezh@ezh-VirtualBox:~/test$ cat file1 | wc -l
+1
+
+# предполагаю, что cat читает(выводит) все файлы каталога /etc кроме скрытого файла .pwd.lock
+
+ezh@ezh-VirtualBox:~/test$ find /etc -maxdepth 1 -type f -name '[.]*' | xargs cat || echo 'error cat'
+cat: /etc/.pwd.lock: Permission denied
+error cat
+ezh@ezh-VirtualBox:~/test$ cat /etc/.pwd.lock
+cat: /etc/.pwd.lock: Permission denied
+
+
+6. Запустить в одном терминале программу, в другом терминале посмотреть PID процесса и остановить с помощью kill,
+посылая разные типы сигналов. Что происходит?
+pts1:
+ezh@ezh-VirtualBox:~/test$ top
+pts0:
+ezh@ezh-VirtualBox:~$ ps -A
+  PID TTY          TIME CMD
+    1 ?        00:00:01 systemd
+    2 ?        00:00:00 kthreadd
+    3 ?        00:00:00 rcu_gp
+    4 ?        00:00:00 rcu_par_gp
+    6 ?        00:00:00 kworker/0:0H-kb
+    7 ?        00:00:00 kworker/0:1-eve
+    9 ?        00:00:00 mm_percpu_wq
+   10 ?        00:00:00 ksoftirqd/0
+   11 ?        00:00:00 rcu_sched
+   12 ?        00:00:00 migration/0
+   13 ?        00:00:00 idle_inject/0
+   14 ?        00:00:00 cpuhp/0
+   15 ?        00:00:00 kdevtmpfs
+   16 ?        00:00:00 netns
+   17 ?        00:00:00 rcu_tasks_kthre
+   18 ?        00:00:00 kauditd
+   19 ?        00:00:00 khungtaskd
+   20 ?        00:00:00 oom_reaper
+   21 ?        00:00:00 writeback
+   22 ?        00:00:00 kcompactd0
+   23 ?        00:00:00 ksmd
+   24 ?        00:00:00 khugepaged
+  116 ?        00:00:00 kintegrityd
+  117 ?        00:00:00 kblockd
+  118 ?        00:00:00 blkcg_punt_bio
+  119 ?        00:00:00 tpm_dev_wq
+  120 ?        00:00:00 ata_sff
+  121 ?        00:00:00 md
+  122 ?        00:00:00 edac-poller
+  123 ?        00:00:00 devfreq_wq
+  124 ?        00:00:00 watchdogd
+  127 ?        00:00:00 kswapd0
+  128 ?        00:00:00 kworker/u3:0
+  129 ?        00:00:00 ecryptfs-kthrea
+  132 ?        00:00:00 kthrotld
+  133 ?        00:00:00 acpi_thermal_pm
+  134 ?        00:00:00 scsi_eh_0
+  135 ?        00:00:00 scsi_tmf_0
+  136 ?        00:00:00 scsi_eh_1
+  137 ?        00:00:00 scsi_tmf_1
+  140 ?        00:00:00 ipv6_addrconf
+  151 ?        00:00:00 kstrp
+  170 ?        00:00:00 charger_manager
+  211 ?        00:00:00 scsi_eh_2
+  212 ?        00:00:00 scsi_tmf_2
+  214 ?        00:00:00 kworker/0:1H-kb
+  235 ?        00:00:00 jbd2/sda1-8
+  236 ?        00:00:00 ext4-rsv-conver
+  269 ?        00:00:00 systemd-journal
+  279 ?        00:00:00 none
+  301 ?        00:00:00 systemd-udevd
+  356 ?        00:00:00 loop0
+  362 ?        00:00:00 loop1
+  385 ?        00:00:00 loop2
+  387 ?        00:00:00 loop3
+  395 ?        00:00:00 loop4
+  400 ?        00:00:00 loop5
+  403 ?        00:00:00 loop6
+  408 ?        00:00:00 loop7
+  410 ?        00:00:00 loop8
+  412 ?        00:00:00 loop9
+  419 ?        00:00:00 loop10
+  421 ?        00:00:00 loop11
+  428 ?        00:00:00 loop12
+  431 ?        00:00:00 systemd-resolve
+  436 ?        00:00:00 loop13
+  448 ?        00:00:00 loop14
+  455 ?        00:00:00 loop15
+  518 ?        00:00:01 dbus-daemon
+  523 ?        00:00:00 avahi-daemon
+  524 ?        00:00:00 rsyslogd
+  527 ?        00:00:00 avahi-daemon
+  528 ?        00:00:00 networkd-dispat
+  529 ?        00:00:00 ModemManager
+  530 ?        00:00:00 udisksd
+  534 ?        00:00:00 cron
+  535 ?        00:00:00 acpid
+  539 ?        00:00:00 accounts-daemon
+  557 ?        00:00:00 NetworkManager
+  560 ?        00:00:00 systemd-logind
+  563 ?        00:00:00 wpa_supplicant
+  578 ?        00:00:04 kworker/0:5-eve
+  615 ?        00:00:00 iprt-VBoxWQueue
+  651 ?        00:00:00 polkitd
+  661 ?        00:00:00 unattended-upgr
+  674 ?        00:00:00 sshd
+  778 ?        00:00:00 cryptd
+  788 ?        00:00:00 irq/18-vmwgfx
+  789 ?        00:00:00 ttm_swap
+  925 ?        00:00:00 whoopsie
+  926 ?        00:00:00 kerneloops
+  931 ?        00:00:00 kerneloops
+ 1123 ?        00:00:00 VBoxClient
+ 1124 ?        00:00:00 VBoxClient
+ 1138 ?        00:00:00 gdm3
+ 1148 ?        00:00:01 VBoxService
+ 1162 ?        00:00:00 gdm-session-wor
+ 1166 ?        00:00:00 systemd
+ 1167 ?        00:00:00 (sd-pam)
+ 1180 ?        00:00:00 gnome-keyring-d
+ 1184 tty1     00:00:00 gdm-x-session
+ 1186 tty1     00:00:03 Xorg
+ 1193 ?        00:00:00 dbus-daemon
+ 1197 tty1     00:00:00 gnome-session-b
+ 1297 ?        00:00:00 VBoxClient
+ 1298 ?        00:00:00 VBoxClient
+ 1306 ?        00:00:00 VBoxClient
+ 1307 ?        00:00:00 VBoxClient
+ 1317 ?        00:00:00 VBoxClient
+ 1318 ?        00:00:00 VBoxClient
+ 1324 ?        00:00:00 VBoxClient
+ 1325 ?        00:00:20 VBoxClient
+ 1334 ?        00:00:00 ssh-agent
+ 1337 ?        00:00:00 gvfsd
+ 1342 ?        00:00:00 gvfsd-fuse
+ 1351 ?        00:00:00 at-spi-bus-laun
+ 1356 ?        00:00:00 dbus-daemon
+ 1359 ?        00:00:00 at-spi2-registr
+ 1375 tty1     00:00:16 gnome-shell
+ 1381 ?        00:00:00 upowerd
+ 1392 ?        00:00:00 pulseaudio
+ 1393 ?        00:00:00 rtkit-daemon
+ 1404 tty1     00:00:00 ibus-daemon
+ 1408 tty1     00:00:00 ibus-dconf
+ 1410 tty1     00:00:00 ibus-x11
+ 1413 ?        00:00:00 ibus-portal
+ 1418 ?        00:00:00 xdg-permission-
+ 1427 ?        00:00:00 gnome-shell-cal
+ 1431 ?        00:00:00 evolution-sourc
+ 1440 ?        00:00:00 goa-daemon
+ 1449 ?        00:00:00 goa-identity-se
+ 1459 ?        00:00:00 boltd
+ 1463 ?        00:00:00 gvfs-udisks2-vo
+ 1467 ?        00:00:00 gvfs-goa-volume
+ 1471 ?        00:00:00 gvfs-mtp-volume
+ 1475 ?        00:00:00 gvfs-afc-volume
+ 1480 ?        00:00:00 gvfs-gphoto2-vo
+ 1484 ?        00:00:05 packagekitd
+ 1489 tty1     00:00:00 gsd-power
+ 1491 tty1     00:00:00 gsd-print-notif
+ 1493 tty1     00:00:00 gsd-rfkill
+ 1495 tty1     00:00:00 gsd-screensaver
+ 1499 tty1     00:00:00 gsd-sharing
+ 1504 tty1     00:00:00 gsd-sound
+ 1505 tty1     00:00:00 gsd-xsettings
+ 1514 tty1     00:00:00 gsd-wacom
+ 1517 tty1     00:00:00 gsd-smartcard
+ 1521 tty1     00:00:00 gsd-a11y-settin
+ 1523 tty1     00:00:00 gsd-clipboard
+ 1527 tty1     00:00:00 gsd-color
+ 1531 tty1     00:00:00 gsd-datetime
+ 1533 tty1     00:00:00 gsd-housekeepin
+ 1534 tty1     00:00:00 gsd-keyboard
+ 1539 tty1     00:00:00 gsd-media-keys
+ 1542 tty1     00:00:00 gsd-mouse
+ 1558 tty1     00:00:00 gsd-printer
+ 1585 tty1     00:00:00 gsd-disk-utilit
+ 1592 tty1     00:00:01 nautilus-deskto
+ 1610 ?        00:00:00 colord
+ 1639 ?        00:00:00 gvfsd-trash
+ 1658 ?        00:00:00 evolution-calen
+ 1668 ?        00:00:00 evolution-calen
+ 1670 ?        00:00:00 dconf-service
+ 1683 ?        00:00:00 evolution-addre
+ 1692 ?        00:00:00 evolution-addre
+ 1706 tty1     00:00:00 ibus-engine-sim
+ 1736 tty1     00:00:02 gnome-software
+ 1738 tty1     00:00:00 update-notifier
+ 1763 ?        00:00:00 fwupd
+ 1807 ?        00:00:01 gnome-terminal-
+ 1816 pts/0    00:00:00 bash
+ 1881 tty1     00:00:00 deja-dup-monito
+ 2147 ?        00:00:00 snapd
+ 2354 ?        00:00:00 dhclient
+ 2376 ?        00:00:00 dhclient
+ 2811 ?        00:00:00 cupsd
+ 2812 ?        00:00:00 cups-browsed
+ 3129 ?        00:00:00 sshd
+ 3206 ?        00:00:00 sshd
+ 3207 pts/1    00:00:00 bash
+ 3252 ?        00:00:00 kworker/u2:2-ev
+ 3366 ?        00:00:00 kworker/u2:0-ev
+ 3445 ?        00:00:00 kworker/u2:1-ev
+ 3463 pts/1    00:00:00 top
+ 3500 ?        00:00:00 gvfsd-metadata
+ 3538 pts/0    00:00:00 ps
+
+ezh@ezh-VirtualBox:~$ ps aux | grep top
+ezh       1592  0.0  3.2 1049660 66936 tty1    Sl+  13:50   0:01 nautilus-desktop
+ezh       3542  0.1  0.2  48992  4088 pts/1    S+   16:10   0:01 top
+ezh       3611  0.0  0.0  21532  1088 pts/0    S+   16:20   0:00 grep --color=auto top
+ezh@ezh-VirtualBox:~$ kill 3542
+ezh@ezh-VirtualBox:~$ ps aux | grep top
+ezh       1592  0.0  3.2 1049660 66936 tty1    Sl+  13:50   0:01 nautilus-desktop
+ezh       3617  0.0  0.0  21532  1076 pts/0    S+   16:23   0:00 grep --color=auto top
+
+ # Запустил top
+ezh@ezh-VirtualBox:~$ ps -A
+.....
+ 3622 pts/1    00:00:00 top
+ 3623 pts/0    00:00:00 ps
+ezh@ezh-VirtualBox:~$ ps aux | grep top
+ezh       1592  0.0  3.2 1049660 66936 tty1    Sl+  13:50   0:01 nautilus-desktop
+ezh       3622  0.1  0.1  48992  3984 pts/1    S+   16:23   0:00 top
+ezh       3634  0.0  0.0  21532  1052 pts/0    S+   16:24   0:00 grep --color=auto top
+ezh@ezh-VirtualBox:~$ kill -TERM 3622
+ezh@ezh-VirtualBox:~$ ps aux | grep top
+ezh       1592  0.0  3.2 1049660 66936 tty1    Sl+  13:50   0:01 nautilus-desktop
+ezh       3636  0.0  0.0  21532  1076 pts/0    S+   16:26   0:00 grep --color=auto top
+ # Запустил top
+ezh@ezh-VirtualBox:~$ ps aux | grep top
+ezh       1592  0.0  3.2 1049660 66936 tty1    Sl+  13:50   0:01 nautilus-desktop
+ezh       3637  0.2  0.1  48992  4060 pts/1    S+   16:26   0:00 top
+ezh       3639  0.0  0.0  21532  1148 pts/0    S+   16:26   0:00 grep --color=auto top
+ezh@ezh-VirtualBox:~$ kill -KILL 3637
+ezh@ezh-VirtualBox:~$ ps aux | grep top
+ezh       1592  0.0  3.2 1049660 66936 tty1    Sl+  13:50   0:01 nautilus-desktop
+ezh       3641  0.0  0.0  21532  1104 pts/0    S+   16:27   0:00 grep --color=auto top
+
+
+7. *Отобразить в /dev список устройств, которые в настоящее время используются вашим UID (для этого используется
+команда lsof). Организовать конвейер через less, чтобы посмотреть их должным образом.
+
+ezh@ezh-VirtualBox:/dev$ sudo lsof /dev | grep ezh | less
+systemd   1166             ezh    0r   CHR     1,3      0t0    6 /dev/null
+(sd-pam   1167             ezh    0r   CHR     1,3      0t0    6 /dev/null
+gnome-key 1180             ezh    0r   CHR     1,3      0t0    6 /dev/null
+gnome-key 1180             ezh    1r   CHR     1,3      0t0    6 /dev/null
+gnome-key 1180             ezh    2r   CHR     1,3      0t0    6 /dev/null
+gnome-key 1180             ezh    3r   CHR     1,9      0t0   11 /dev/urandom
+gdm-x-ses 1184             ezh    0u   CHR     4,1      0t0   22 /dev/tty1
+Xorg      1186             ezh  mem    CHR   226,0           423 /dev/dri/card0
+...
+...
+sshd      3206             ezh    0u   CHR     1,3      0t0    6 /dev/null
+sshd      3206             ezh    1u   CHR     1,3      0t0    6 /dev/null
+sshd      3206             ezh    2u   CHR     1,3      0t0    6 /dev/null
+sshd      3206             ezh    9u   CHR     5,2      0t0   88 /dev/ptmx
+sshd      3206             ezh   11u   CHR     5,2      0t0   88 /dev/ptmx
+sshd      3206             ezh   12u   CHR     5,2      0t0   88 /dev/ptmx
+gvfsd-met 3500             ezh    0r   CHR     1,3      0t0    6 /dev/null
+less      3656             ezh    3r   CHR     5,0      0t0   13 /dev/tty
+grep      3719             ezh  cwd    DIR     0,6     4240    2 /dev
+
+
+
+
+8. *Cоздайте директорию для хранения фотографий, в ней должны быть директории по годам, (например, за последние 5 лет),
+и в каждой директории года по директории для месяца.
+
+ezh@ezh-VirtualBox:~/test$ mkdir ./photo
+ezh@ezh-VirtualBox:~/test$ ls
+file1  photo
+ezh@ezh-VirtualBox:~/test/photo$ mkdir 20{15..20}/{1..12}
+ezh@ezh-VirtualBox:~/test/photo$ ls
+2015  2016  2017  2018  2019  2020
+ezh@ezh-VirtualBox:~/test/photo$ tree
+.
+├── 2015
+│   ├── 1
+│   ├── 10
+│   ├── 11
+│   ├── 12
+│   ├── 2
+│   ├── 3
+│   ├── 4
+│   ├── 5
+│   ├── 6
+│   ├── 7
+│   ├── 8
+│   └── 9
+├── 2016
+│   ├── 1
+│   ├── 10
+│   ├── 11
+│   ├── 12
+│   ├── 2
+│   ├── 3
+│   ├── 4
+│   ├── 5
+│   ├── 6
+│   ├── 7
+│   ├── 8
+│   └── 9
+├── 2017
+│   ├── 1
+│   ├── 10
+│   ├── 11
+│   ├── 12
+│   ├── 2
+│   ├── 3
+│   ├── 4
+│   ├── 5
+│   ├── 6
+│   ├── 7
+│   ├── 8
+│   └── 9
+├── 2018
+│   ├── 1
+│   ├── 10
+│   ├── 11
+│   ├── 12
+│   ├── 2
+│   ├── 3
+│   ├── 4
+│   ├── 5
+│   ├── 6
+│   ├── 7
+│   ├── 8
+│   └── 9
+├── 2019
+│   ├── 1
+│   ├── 10
+│   ├── 11
+│   ├── 12
+│   ├── 2
+│   ├── 3
+│   ├── 4
+│   ├── 5
+│   ├── 6
+│   ├── 7
+│   ├── 8
+│   └── 9
+└── 2020
+    ├── 1
+    ├── 10
+    ├── 11
+    ├── 12
+    ├── 2
+    ├── 3
+    ├── 4
+    ├── 5
+    ├── 6
+    ├── 7
+    ├── 8
+    └── 9
+
+
+9. *Заполните директории файлами вида ГГГГММДДНН.txt. Внутри файла должно быть имя файла. Например 2018011301.txt, 2018011302.txt.
+
+ezh@ezh-VirtualBox:~/test$ nano photos.sh
+
+# !/bin/bash
+for i in $(ls /home/ezh/test/photo);
+do
+
+	for k in $(ls /home/ezh/test/photo/$i/);
+	do
+		for el in {1..30};
+		do
+			for n1 in {1..4};
+			do
+	                touch /home/ezh/test/photo/$i/$k/$i$k$el$n1.txt
+	                echo  $i$k$el$n1.txt >> /home/ezh/test/photo/$i/$k/$i$k$el$n1.txt
+			done
+		done
+	done
+done
+
+
+
+ezh@ezh-VirtualBox:~/test$ ./photos.sh
+ezh@ezh-VirtualBox:~/test$ cd ./photo
+ezh@ezh-VirtualBox:~/test/photo$ ls
+2015  2016  2017  2018  2019  2020
+ezh@ezh-VirtualBox:~/test/photo$ cd ./2015
+ezh@ezh-VirtualBox:~/test/photo/2015$ ls
+1  10  11  12  2  3  4  5  6  7  8  9
+ezh@ezh-VirtualBox:~/test/photo/2015$ cd ./1
+ezh@ezh-VirtualBox:~/test/photo/2015/1$ ls
+20151101.txt  20151132.txt  20151163.txt  20151202.txt  20151233.txt  20151264.txt  20151303.txt  2015162.txt
+20151102.txt  20151133.txt  20151164.txt  20151203.txt  20151234.txt  20151271.txt  20151304.txt  2015163.txt
+20151103.txt  20151134.txt  20151171.txt  20151204.txt  2015123.txt   20151272.txt  2015131.txt   2015164.txt
+20151104.txt  2015113.txt   20151172.txt  20151211.txt  20151241.txt  20151273.txt  2015132.txt   2015171.txt
+20151111.txt  20151141.txt  20151173.txt  20151212.txt  20151242.txt  20151274.txt  2015133.txt   2015172.txt
+20151112.txt  20151142.txt  20151174.txt  20151213.txt  20151243.txt  20151281.txt  2015134.txt   2015173.txt
+20151113.txt  20151143.txt  20151181.txt  20151214.txt  20151244.txt  20151282.txt  2015141.txt   2015174.txt
+20151114.txt  20151144.txt  20151182.txt  2015121.txt   2015124.txt   20151283.txt  2015142.txt   2015181.txt
+2015111.txt   2015114.txt   20151183.txt  20151221.txt  20151251.txt  20151284.txt  2015143.txt   2015182.txt
+20151121.txt  20151151.txt  20151184.txt  20151222.txt  20151252.txt  20151291.txt  2015144.txt   2015183.txt
+20151122.txt  20151152.txt  20151191.txt  20151223.txt  20151253.txt  20151292.txt  2015151.txt   2015184.txt
+20151123.txt  20151153.txt  20151192.txt  20151224.txt  20151254.txt  20151293.txt  2015152.txt   2015191.txt
+20151124.txt  20151154.txt  20151193.txt  2015122.txt   20151261.txt  20151294.txt  2015153.txt   2015192.txt
+2015112.txt   20151161.txt  20151194.txt  20151231.txt  20151262.txt  20151301.txt  2015154.txt   2015193.txt
+20151131.txt  20151162.txt  20151201.txt  20151232.txt  20151263.txt  20151302.txt  2015161.txt   2015194.txt
+ezh@ezh-VirtualBox:~/test/photo/2015/1$ cat 20151101.txt
+20151101.txt
+ezh@ezh-VirtualBox:~/test/photo/2015/1$
+
+
+10. * Полезное задание на конвейер. Использовать команду cut на вывод длинного списка каталога, чтобы отобразить только
+права доступа к файлам. Затем отправить в конвейере этот вывод на sort и uniq, чтобы отфильтровать все повторяющиеся строки.
+Потом с помощью wc посчитать различные типы разрешений в этом каталоге. Самостоятельно решить задачу, как сделать так,
+чтобы в подсчет не добавлялись строка Итого и файлы . и .. (ссылки на текущую и родительскую директории)
+Примечание. Задания с 7 по 10 даны для тех, кому упражнений 1-6 показалось недостаточно.
+
+ezh@ezh-VirtualBox:/etc$ ls -la | grep -v ['.*'] | cut -b 1-11 | sort | uniq | grep -v '^total*'
+drwxr-s---
+drwxrwxr-x
+drwxr-xr-x
+lrwxrwxrwx
+-r--r-----
+-r--r--r--
+-rw-r-----
+-rw-r--r--
+-rw-rw-r--
+-rwxr-xr-x
+
+
+ezh@ezh-VirtualBox:/etc$ ls -la | grep -v ['.*'] | cut -b 1-11 | sort | uniq | grep -v '^total*' | wc -l
+10
+
+
+
