@@ -112,7 +112,7 @@ ezh@ezh-VirtualBox:~$ sed -En 's/^.*(\/.*\.gif)/\1/p' test1
 /12345.gif
 /1234gif.gif
 
-ezh@ezh-VirtualBox:~$ sed -En 's/^.*\/(.*\.gif)/\1/p' test1
+ezh@ezh-VirtualBox:~$ sed -En 's/^.*/([a-zA-Z0-9_]+.(gif|exe|com)$)/\1/p' test1
 test5.gif
 12345.gif
 1234gif.gif
