@@ -84,36 +84,25 @@ server {
 
 root@ezh-VirtualBox:/home/ezh# nano /etc/nginx/conf.d/ezhhost.ru
 server {
-        listen 80 default_server;         № добавил default_server и заработал ezhhost.ru , до этого работал только если указать его в хидере
-        listen [::]:80 default_server;
-
+        listen 80;
+        listen [::]:80;
         server_name ezhhost.ru;
-
         location / {
-
-          if ($http_name != "Andry") {
-                 return 404 "Page not found";
-           }
-                 return 200 "Hi $http_name";
-
-        }
-
-
+           if ( $http_name = ""  ) { return 404 "Page not found\n"; }
+           if ( $http_name != "" ) { return 200 "Hi $http_name\n"; }
+         }
         location /admin {
           return 200 "ADMIN";
         }
 }
 
+root@ezh-VirtualBox:/home/ezh/tmp# curl -H "Host:ezhhost.ru" -H "Name: " http://localhost
+Page not found
+root@ezh-VirtualBox:/home/ezh/tmp# curl -H "Host:ezhhost.ru" -H "Name: Marat" http://localhost
+Hi Marat
+root@ezh-VirtualBox:/home/ezh/tmp#
 
 
-
-root@ezh-VirtualBox:/home/ezh# curl http://localhost
-Page not foundroot@ezh-VirtualBox:/home/ezh# curl -H "name: Andry" http://localhost
-Hi Andryroot@ezh-VirtualBox:/home/ezh#
-
-root@ezh-VirtualBox:/home/ezh# curl -H "name: Andry" http://localhost/admin
-ADMINroot@ezh-VirtualBox:/home/ezh# curl http://localhost/admin
-ADMINroot@ezh-VirtualBox:/home/ezh#
 
 3. Мне прислать конфиг nginx и команду curl, которую выполняете.
 
