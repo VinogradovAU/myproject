@@ -1,0 +1,272 @@
+1. Написать Dockerfile для сборки образа, который будет запускать контейнер с django приложением, доуступным по
+ссылке: https://github.com/mtuktarov/linux_stuff/tree/master/django-test-app. Для запуска приложения использовать
+оманду python manage.py runserver 0.0.0.0:8000, где manage.py - это файл из репозитория.
+- установка Docker
+    sudo apt update && sudo apt upgrade
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    sudo apt update && apt-cache policy docker-ce
+    sudo apt install -y docker-ce
+    ezh@ezh-VirtualBox:~/mydocker$ sudo usermod -aG docker ezh
+
+    systemctl status docker
+    ● docker.service - Docker Application Container Engine
+   Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2020-03-17 22:24:43 MSK; 8min ago
+     Docs: https://docs.docker.com
+ Main PID: 31431 (dockerd)
+    Tasks: 8
+   CGroup: /system.slice/docker.service
+           └─31431 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.199536073+03:00" level=warning msg="Your kernel does not support
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.199622808+03:00" level=warning msg="Your kernel does not support
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.199678858+03:00" level=warning msg="Your kernel does not support
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.201077859+03:00" level=info msg="Loading containers: start."
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.280104602+03:00" level=info msg="Default bridge (docker0) is ass
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.460998142+03:00" level=info msg="Loading containers: done."
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.590308596+03:00" level=info msg="Docker daemon" commit=afacb8b7f
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.592101717+03:00" level=info msg="Daemon has completed initializa
+мар 17 22:24:43 ezh-VirtualBox systemd[1]: Started Docker Application Container Engine.
+мар 17 22:24:43 ezh-VirtualBox dockerd[31431]: time="2020-03-17T22:24:43.694090123+03:00" level=info msg="API listen on /var/run/docker.s
+~
+~
+
+ezh@ezh-VirtualBox:~/mydocker$ sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   617  100   617    0     0   1071      0 --:--:-- --:--:-- --:--:--  1071
+100 16.2M  100 16.2M    0     0  1973k      0  0:00:08  0:00:08 --:--:-- 2252k
+ezh@ezh-VirtualBox:~/mydocker$ sudo chmod +x /usr/local/bin/docker-compose
+ezh@ezh-VirtualBox:~/mydocker$ docker-compose --version
+docker-compose version 1.25.0, build 0a186604
+ezh@ezh-VirtualBox:~/mydocker$ docker run hello-world
+docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock:
+Post http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/create: dial unix /var/run/docker.sock: connect: permission denied.
+See 'docker run --help'.
+ezh@ezh-VirtualBox:~/mydocker$ sudo gpasswd -a $USER docker
+Adding user ezh to group docker
+ezh@ezh-VirtualBox:~/mydocker$ newgrp docker
+ezh@ezh-VirtualBox:~/mydocker$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+1b930d010525: Pull complete
+Digest: sha256:f9dfddf63636d84ef479d645ab5885156ae030f611a56f3a7ac7f2fdd86d7e4e
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!..........
+..........
+
+Скачал rjyntqyth c Ubuntu. Запустил.
+ezh@ezh-VirtualBox:~/mydocker$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+5f69e0bc66a6        ubuntu              "/bin/bash"         About an hour ago   Up About an hour                        wizardly_satoshi
+ezh@ezh-VirtualBox:~/mydocker$ docker exec -it 5f69e0bc66a6 bash
+root@5f69e0bc66a6:/# ls
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@5f69e0bc66a6:/# exit
+
+Скопировал приложение из https://github.com/mtuktarov/linux_stuff/tree/master/django-test-app
+Создал файл Dockerfile следующего содержания:
+
+FROM django:latest
+COPY ./django-test-app  /opt/django-test-app
+WORKDIR /opt/
+COPY ./django-test-app/requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+RUN chmod +x /opt/django-test-app/start.sh
+RUN chmod +x /opt/django-test-app/manage.py
+RUN rm -rf /tmp/requirements.txt
+CMD ["/opt/django-test-app/start.sh"]
+
+
+
+ezh@ezh-VirtualBox:~/mydocker$ docker build -t ezh24 .
+Sending build context to Docker daemon  99.84kB
+Step 1/9 : FROM django:latest
+ ---> eb40dcf64078
+Step 2/9 : COPY ./django-test-app  /opt/django-test-app
+ ---> Using cache
+ ---> 022748cf7f71
+Step 3/9 : WORKDIR /opt/
+ ---> Using cache
+ ---> 056fa3453ae4
+Step 4/9 : COPY ./django-test-app/requirements.txt /tmp/requirements.txt
+ ---> Using cache
+ ---> f9ac54421786
+Step 5/9 : RUN pip install -r /tmp/requirements.txt
+ ---> Using cache
+ ---> 89353eaa891a
+Step 6/9 : RUN chmod +x /opt/django-test-app/start.sh
+ ---> Using cache
+ ---> 74de11bea99c
+Step 7/9 : RUN chmod +x /opt/django-test-app/manage.py
+ ---> Using cache
+ ---> 55dee6f4f4ea
+Step 8/9 : RUN rm -rf /tmp/requirements.txt
+ ---> Using cache
+ ---> 6910639451b7
+Step 9/9 : CMD ["/opt/django-test-app/start.sh"]
+ ---> Running in 2d24e26a30f1
+Removing intermediate container 2d24e26a30f1
+ ---> d834b1931f37
+Successfully built d834b1931f37
+Successfully tagged ezh24:latest
+ezh@ezh-VirtualBox:~/mydocker$ docker run -it ezh24
+Performing system checks...
+
+System check identified no issues (0 silenced).
+
+You have 15 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, polls, sessions.
+Run 'python manage.py migrate' to apply them.
+
+March 17, 2020 - 23:12:05
+Django version 2.0.8, using settings 'demo.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+
+2. Зная, что в этом приложении django хранит базу в файле db.sqlite3, нужно избавиться от ошибки, которая
+появится при старте:
+You have 15 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s):
+admin, auth, contenttypes, polls, sessions.
+Run 'python manage.py migrate' to apply them.
+
+--------------------------------------------------------------------
+                    start.sh
+#! /bin/bash
+
+python /opt/django-test-app/manage.py migrate
+python /opt/django-test-app/manage.py runserver 0.0.0.0:8000
+
+--------------------------------------------------------------------
+
+ezh@ezh-VirtualBox:~/mydocker$ docker run -it ezh24
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, polls, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying polls.0001_initial... OK
+  Applying sessions.0001_initial... OK
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 17, 2020 - 23:18:22
+Django version 2.0.8, using settings 'demo.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+ezh@ezh-VirtualBox:~/mydocker$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS               NAMES
+b9c2cd0febd7        ezh24               "/opt/django-test-ap…"   About a minute ago   Up About a minute                       infallible_tesla
+5f69e0bc66a6        ubuntu              "/bin/bash"              3 hours ago          Up 3 hours                              wizardly_satoshi
+ezh@ezh-VirtualBox:~/mydocker$
+
+3. Запустить контейнер так, чтобы приложение было доступным из браузера Ubuntu, используя Ubuntu hostname.
+
+ezh@ezh-VirtualBox:~/mydocker$ ufw allow 8000
+ezh@ezh-VirtualBox:~/mydocker$ sudo ufw status
+[sudo] password for ezh:
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22                         ALLOW       Anywhere
+80                         ALLOW       Anywhere
+443                        ALLOW       Anywhere
+8080                       ALLOW       Anywhere
+8000                       ALLOW       Anywhere
+22 (v6)                    ALLOW       Anywhere (v6)
+80 (v6)                    ALLOW       Anywhere (v6)
+443 (v6)                   ALLOW       Anywhere (v6)
+8080 (v6)                  ALLOW       Anywhere (v6)
+8000 (v6)                  ALLOW       Anywhere (v6)
+
+
+ezh@ezh-VirtualBox:~/mydocker$ docker run -it --publish=8000:8000 ezh24
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, polls, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying polls.0001_initial... OK
+  Applying sessions.0001_initial... OK
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 17, 2020 - 23:38:11
+Django version 2.0.8, using settings 'demo.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+ezh@ezh-VirtualBox:~/mydocker$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+5bd4e2132fe3        ezh24               "/opt/django-test-ap…"   15 seconds ago      Up 13 seconds       0.0.0.0:8000->8000/tcp   sweet_feynman
+b9c2cd0febd7        ezh24               "/opt/django-test-ap…"   20 minutes ago      Up 20 minutes                                infallible_tesla
+5f69e0bc66a6        ubuntu              "/bin/bash"              4 hours ago         Up 4 hours                                   wizardly_satoshi
+
+--------------------------------------------------------------------------------------
+В БРАУЗЕРЕ! Ракета + The install worked successfully! Congratulations!
+---------------------------------------------------------------------------------------
+
+
+4. Создать аккаунт на Dockerhub и залить туда образ. Указать имя образа.
+
+ezh@ezh-VirtualBox:~/mydocker$ docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: ezh24
+Password:
+WARNING! Your password will be stored unencrypted in /home/ezh/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+
+ezh@ezh-VirtualBox:~/mydocker$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+5bd4e2132fe3        ezh24               "/opt/django-test-ap…"   25 minutes ago      Up 25 minutes       0.0.0.0:8000->8000/tcp   sweet_feynman
+ezh@ezh-VirtualBox:~/mydocker$ docker commit 5bd4e2132fe3  ezh24/ezh24_test1
+sha256:4ad560f7c88cb89d6397b313292a27f40c7c9102595f2298bf9866507f16d676
+ezh@ezh-VirtualBox:~/mydocker$ docker push ezh24/ezh24_test1
+The push refers to repository [docker.io/ezh24/ezh24_test1]
+24be47a756b4: Pushed
+33bd39a6490c: Pushed
+828fff891615: Pushed
+25ed57fbf8ff: Pushed
+de9ae524059e: Pushed
+b2baee75e57d: Pushed
+4079fa70b563: Pushed
+e6d982acf7bf: Pushed
+6d0632e611f4: Pushed
+4bd3b46a8734: Pushed
+f72299e7fd5a: Pushed
+40cc5c729ee1: Pushed
+b6ca02dfe5e6: Pushed
+latest: digest: sha256:88e7011d8768af69da4967e11201b257ed913ac67955b3eba168dd1ace36abe4 size: 3041
+ezh@ezh-VirtualBox:~/mydocker$
+
+---------------------------------------------------------------------
+ezh24_test1 - image name
+----------------------------------------------------------------------
