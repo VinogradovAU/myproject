@@ -1,0 +1,150 @@
+-------Dockerfile для контейнера uwsgi с приложением
+
+FROM python
+RUN pip install uWSGI
+FROM django:latest
+COPY ./django-test-app  /app/django-test-app
+WORKDIR /app/
+COPY ./django-test-app/requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+RUN chmod +x /app/django-test-app/start.sh
+RUN chmod +x /app/django-test-app/manage.py
+RUN rm -rf /tmp/requirements.txt
+CMD ["/app/django-test-app/start.sh"]
+
+----------start.sh----------
+#! /bin/bash
+#python /app/django-test-app/manage.py migrate
+python /app/django-test-app/manage.py runserver 0.0.0.0:3131
+uwsgi --socket 127.0.0.1:9090 --socket 127.0.0.1:3131 --ini /app/django-test-app/conf/uwsgi.ini --chmod-socket=777
+
+---------uwsgi.ini-------------
+[uwsgi]
+chdir           = /app/django-test-app
+uid             = www-data
+gid             = www-data
+env             = DJANGO_SETTINGS_MODULE=project.settings
+chmod-socket    = 666
+socket          = localhost:9090
+wsgi-file       = /app/django-test-app/testapp.py
+
+---------папка в конфигами на хосте----------
+ezh@ezh-VirtualBox:~/mydocker/conf$ ls
+nginx.conf  testapp.sock  test.sock  uwsgi.ini
+#я ее пробрасываю в контенеры и в nginx и в uwsgi
+----------------------------------------------
+
+------------Собираетмся контейнер с uwsgi---------------
+ezh@ezh-VirtualBox:~/mydocker/uwsgi_docker$ docker build -t myapp .
+Sending build context to Docker daemon  41.98kB
+Step 1/11 : FROM python
+ ---> f88b2f81f83a
+Step 2/11 : RUN pip install uWSGI
+ ---> Using cache
+ ---> 972f68a1eb27
+Step 3/11 : FROM django:latest
+ ---> eb40dcf64078
+Step 4/11 : COPY ./django-test-app  /app/django-test-app
+ ---> 51d633a51554
+Step 5/11 : WORKDIR /app/
+ ---> Running in fe36e62f9aac
+Removing intermediate container fe36e62f9aac
+ ---> 1638087f5a44
+Step 6/11 : COPY ./django-test-app/requirements.txt /tmp/requirements.txt
+ ---> 7938eb33d434
+Step 7/11 : RUN pip install -r /tmp/requirements.txt
+ ---> Running in 23ec08b660fd
+Collecting Django==2.0.8 (from -r /tmp/requirements.txt (line 1))
+  Downloading https://files.pythonhosted.org/packages/2b/85/337bfa37c4b82f59ee9b8deca55a8daa7ef16c8cdfa86d273625bc6ed887/Django-2.0.8-py3-none-any.whl (7.1MB)
+Collecting pytz==2018.5 (from -r /tmp/requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/30/4e/27c34b62430286c6d59177a0842ed90dc789ce5d1ed740887653b898779a/pytz-2018.5-py2.py3-none-any.whl (510kB)
+Installing collected packages: pytz, Django
+  Found existing installation: Django 1.10.4
+    Uninstalling Django-1.10.4:
+      Successfully uninstalled Django-1.10.4
+Successfully installed Django-2.0.8 pytz-2018.5
+You are using pip version 9.0.1, however version 20.0.2 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Removing intermediate container 23ec08b660fd
+ ---> 0fc8b7663d24
+Step 8/11 : RUN chmod +x /app/django-test-app/start.sh
+ ---> Running in 7662cef291e3
+Removing intermediate container 7662cef291e3
+ ---> 88a645c369e4
+Step 9/11 : RUN chmod +x /app/django-test-app/manage.py
+ ---> Running in 7d6e53d517d7
+Removing intermediate container 7d6e53d517d7
+ ---> df3c4f8a5b5f
+Step 10/11 : RUN rm -rf /tmp/requirements.txt
+ ---> Running in eb6dc500a67d
+Removing intermediate container eb6dc500a67d
+ ---> 1c90afcc1324
+Step 11/11 : CMD ["/app/django-test-app/start.sh"]
+ ---> Running in 1088bdb51cc3
+Removing intermediate container 1088bdb51cc3
+ ---> b1d003a500f4
+Successfully built b1d003a500f4
+Successfully tagged myapp:latest
+
+ezh@ezh-VirtualBox:~/mydocker/conf$ docker run -v ~/mydocker/conf:/app/django-test-app/conf -d --publish=9090:9090 myapp
+8ffe4ae0c223ecc43d522f1fc38c2dbe12400b890a2a48308ec1e3ba8b92fb8a
+
+
+
+----------конфиг nginx.conf-------------------
+upstream backend {
+   server 127.0.0.1:9090;
+}
+server {
+    listen          80;
+    server_name     localhost;
+    charset         utf-8;
+
+    client_max_body_size 10M;
+
+    location / {
+        proxy_pass http://backend;
+    }
+}
+----------Dockerfile ----------для nginx контейнера
+FROM nginx
+WORKDIR /opt/
+CMD /usr/sbin/nginx -g "daemon off;"
+
+ezh@ezh-VirtualBox:~/mydocker$ docker build -t mynginx .
+Sending build context to Docker daemon  145.4kB
+Step 1/3 : FROM nginx
+ ---> 6678c7c2e56c
+Step 2/3 : WORKDIR /opt/
+ ---> Using cache
+ ---> a95c9429b27b
+Step 3/3 : CMD /usr/sbin/nginx -g "daemon off;"
+ ---> Using cache
+ ---> b3d7421b94c6
+Successfully built b3d7421b94c6
+Successfully tagged mynginx:latest
+
+ezh@ezh-VirtualBox:~/mydocker/conf$ docker run -v ~/mydocker/conf:/app/django-test-app/conf -d --publish=9090:9090 myapp
+8ffe4ae0c223ecc43d522f1fc38c2dbe12400b890a2a48308ec1e3ba8b92fb8a
+ezh@ezh-VirtualBox:~/mydocker$ docker run -v ~/mydocker/conf/:/etc/nginx/conf.d/ -d --publish=80:80  mynginx
+2e452461848b65103de44e440d54b2de140c160f5a1bd419322583e87854005e
+
+
+ezh@ezh-VirtualBox:~/mydocker$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+8ffe4ae0c223        myapp               "/app/django-test-ap…"   9 minutes ago       Up 9 minutes        0.0.0.0:9090->9090/tcp   cool_almeida
+f96e6a196421        mynginx             "/bin/sh -c '/usr/sb…"   22 minutes ago      Up 22 minutes       0.0.0.0:80->80/tcp       sweet_austin
+
+zh@ezh-VirtualBox:~/mydocker$ docker run -v ~/mydocker/conf/:/etc/nginx/conf.d/ -ti --publish=80:80  mynginx &
+[1] 10422
+ezh@ezh-VirtualBox:~/mydocker$ fg
+docker run -v ~/mydocker/conf/:/etc/nginx/conf.d/ -ti --publish=80:80 mynginx
+2020/03/25 14:33:35 [error] 7#7: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.17.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:9090/", host: "localhost"
+172.17.0.1 - - [25/Mar/2020:14:33:35 +0000] "GET / HTTP/1.1" 502 157 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0" "-"
+2020/03/25 14:33:53 [error] 7#7: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.17.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:9090/", host: "localhost"
+172.17.0.1 - - [25/Mar/2020:14:33:53 +0000] "GET / HTTP/1.1" 502 157 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0" "-"
+
+---------при заходе на localhost:80 ---------- получаю 502 ошибку
+видно что он , видимо перераправляет запрос на upstream: "http://127.0.0.1:9090/
+Пока что-то не получается задуманный результат. Работаю над ошибками.
+форс мажорные обстоятельства случились. сел за ДЗ только сегодня.
