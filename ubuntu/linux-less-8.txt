@@ -1,150 +1,294 @@
--------Dockerfile для контейнера uwsgi с приложением
 
-FROM python
-RUN pip install uWSGI
-FROM django:latest
-COPY ./django-test-app  /app/django-test-app
-WORKDIR /app/
-COPY ./django-test-app/requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
-RUN chmod +x /app/django-test-app/start.sh
-RUN chmod +x /app/django-test-app/manage.py
-RUN rm -rf /tmp/requirements.txt
-CMD ["/app/django-test-app/start.sh"]
+в браузер буду писать запрос localhost/test1/ -----------> nginx ---------> uwsgi -----> wsgi.py--->вернет HELLO WORLD
 
-----------start.sh----------
-#! /bin/bash
-#python /app/django-test-app/manage.py migrate
-python /app/django-test-app/manage.py runserver 0.0.0.0:3131
-uwsgi --socket 127.0.0.1:9090 --socket 127.0.0.1:3131 --ini /app/django-test-app/conf/uwsgi.ini --chmod-socket=777
-
----------uwsgi.ini-------------
-[uwsgi]
-chdir           = /app/django-test-app
-uid             = www-data
-gid             = www-data
-env             = DJANGO_SETTINGS_MODULE=project.settings
-chmod-socket    = 666
-socket          = localhost:9090
-wsgi-file       = /app/django-test-app/testapp.py
-
----------папка в конфигами на хосте----------
-ezh@ezh-VirtualBox:~/mydocker/conf$ ls
-nginx.conf  testapp.sock  test.sock  uwsgi.ini
-#я ее пробрасываю в контенеры и в nginx и в uwsgi
-----------------------------------------------
-
-------------Собираетмся контейнер с uwsgi---------------
-ezh@ezh-VirtualBox:~/mydocker/uwsgi_docker$ docker build -t myapp .
-Sending build context to Docker daemon  41.98kB
-Step 1/11 : FROM python
- ---> f88b2f81f83a
-Step 2/11 : RUN pip install uWSGI
- ---> Using cache
- ---> 972f68a1eb27
-Step 3/11 : FROM django:latest
- ---> eb40dcf64078
-Step 4/11 : COPY ./django-test-app  /app/django-test-app
- ---> 51d633a51554
-Step 5/11 : WORKDIR /app/
- ---> Running in fe36e62f9aac
-Removing intermediate container fe36e62f9aac
- ---> 1638087f5a44
-Step 6/11 : COPY ./django-test-app/requirements.txt /tmp/requirements.txt
- ---> 7938eb33d434
-Step 7/11 : RUN pip install -r /tmp/requirements.txt
- ---> Running in 23ec08b660fd
-Collecting Django==2.0.8 (from -r /tmp/requirements.txt (line 1))
-  Downloading https://files.pythonhosted.org/packages/2b/85/337bfa37c4b82f59ee9b8deca55a8daa7ef16c8cdfa86d273625bc6ed887/Django-2.0.8-py3-none-any.whl (7.1MB)
-Collecting pytz==2018.5 (from -r /tmp/requirements.txt (line 2))
-  Downloading https://files.pythonhosted.org/packages/30/4e/27c34b62430286c6d59177a0842ed90dc789ce5d1ed740887653b898779a/pytz-2018.5-py2.py3-none-any.whl (510kB)
-Installing collected packages: pytz, Django
-  Found existing installation: Django 1.10.4
-    Uninstalling Django-1.10.4:
-      Successfully uninstalled Django-1.10.4
-Successfully installed Django-2.0.8 pytz-2018.5
-You are using pip version 9.0.1, however version 20.0.2 is available.
-You should consider upgrading via the 'pip install --upgrade pip' command.
-Removing intermediate container 23ec08b660fd
- ---> 0fc8b7663d24
-Step 8/11 : RUN chmod +x /app/django-test-app/start.sh
- ---> Running in 7662cef291e3
-Removing intermediate container 7662cef291e3
- ---> 88a645c369e4
-Step 9/11 : RUN chmod +x /app/django-test-app/manage.py
- ---> Running in 7d6e53d517d7
-Removing intermediate container 7d6e53d517d7
- ---> df3c4f8a5b5f
-Step 10/11 : RUN rm -rf /tmp/requirements.txt
- ---> Running in eb6dc500a67d
-Removing intermediate container eb6dc500a67d
- ---> 1c90afcc1324
-Step 11/11 : CMD ["/app/django-test-app/start.sh"]
- ---> Running in 1088bdb51cc3
-Removing intermediate container 1088bdb51cc3
- ---> b1d003a500f4
-Successfully built b1d003a500f4
-Successfully tagged myapp:latest
-
-ezh@ezh-VirtualBox:~/mydocker/conf$ docker run -v ~/mydocker/conf:/app/django-test-app/conf -d --publish=9090:9090 myapp
-8ffe4ae0c223ecc43d522f1fc38c2dbe12400b890a2a48308ec1e3ba8b92fb8a
-
-
-
-----------конфиг nginx.conf-------------------
-upstream backend {
-   server 127.0.0.1:9090;
-}
-server {
-    listen          80;
-    server_name     localhost;
-    charset         utf-8;
-
-    client_max_body_size 10M;
-
-    location / {
-        proxy_pass http://backend;
+------------Создаем сеть для контейнеров
+-------ЗАПУСК
+ezh@ezh-VirtualBox:~$ sudo ufw allow 81
+ezh@ezh-VirtualBox:~$ sudo docker network create mynetwork
+ezh@ezh-VirtualBox:~$ docker network inspect mynetwork
+[
+    {
+        "Name": "mynetwork",
+        "Id": "f4c399942323894ed6e10b1377d31dc866da7fb8e999b12177177fa224e3917c",
+        "Created": "2020-03-29T22:19:35.027267078+03:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
     }
-}
-----------Dockerfile ----------для nginx контейнера
-FROM nginx
-WORKDIR /opt/
-CMD /usr/sbin/nginx -g "daemon off;"
+]
+ezh@ezh-VirtualBox:~$
 
-ezh@ezh-VirtualBox:~/mydocker$ docker build -t mynginx .
-Sending build context to Docker daemon  145.4kB
-Step 1/3 : FROM nginx
- ---> 6678c7c2e56c
-Step 2/3 : WORKDIR /opt/
+
+--------------Контейнер с nginx----------------------------
+
+Cezh@ezh-VirtualBox:~/project1/cont_nginx$ ls
+Dockerfile  ezh.conf  uwsgi_params
+
+-----Dockerfile
+ezh@ezh-VirtualBox:~/project1/cont_nginx$ cat Do*
+FROM nginx:alpine
+WORKDIR /opt
+RUN rm /etc/nginx/conf.d/default.conf
+ADD ./ezh.conf /etc/nginx/conf.d/
+RUN mkdir /etc/nginx/sites-enabled
+RUN ln -s /etc/nginx/conf.d/ezh.conf /etc/nginx/sites-enabled/
+#ADD ./uwsgi_params /etc/nginx/uwsgi_params
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+ezh@ezh-VirtualBox:~/project1/cont_nginx$
+
+-------ezh.conf
+server {
+    listen       80;
+    server_name  localhost;
+
+location /test1 {
+
+         #include /etc/nginx/uwsgi_params;
+         proxy_pass http://172.18.0.3:81;
+    }
+
+ezh@ezh-VirtualBox:~$
+ezh@ezh-VirtualBox:~/project1/cont_nginx$ docker build -t nginx .
+....
+... сделал билд
+....
+
+
+ezh@ezh-VirtualBox:~$ docker run --rm -t  --net mynetwork --name nginx -h nginx -p 80:80 nginx
+ezh@ezh-VirtualBox:~$ docker network inspect mynetwork
+[
+    {
+        "Name": "mynetwork",
+        "Id": "f4c399942323894ed6e10b1377d31dc866da7fb8e999b12177177fa224e3917c",
+        "Created": "2020-03-29T22:19:35.027267078+03:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "478d4ebaba18df600237088911fba7b9c0e2b4053c2335a5ac0c83f749e35bfc": {
+                "Name": "nginx",
+                "EndpointID": "bce22e876b018395e1b5c2960bb4714942ee6fe245e98d71aff7c28a8dc66d79",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+ezh@ezh-VirtualBox:~$
+
+--------------Контейнер с uwsgi + wsgi.py ----------------------------
+ezh@ezh-VirtualBox:~/project1/cont_app$ ls
+Dockerfile  start.sh  uwsgi.ini  wsgi.py
+
+ezh@ezh-VirtualBox:~/project1/cont_app$ cat Dockerfile
+FROM python:3
+WORKDIR /opt
+RUN apt-get update
+RUN apt-get install uwsgi -y
+RUN apt-get install libpcre3 libpcre3-dev
+RUN pip3 install uwsgi
+RUN pip3 install django
+RUN django-admin.py startproject mysite
+COPY ./uwsgi.ini /etc/uwsgi/
+COPY ./wsgi.py ./mysite/
+COPY ./start.sh ./mysite/
+CMD ["./mysite/start.sh"]
+ezh@ezh-VirtualBox:~/project1/cont_app$ cat start.sh
+#!/bin/bash
+uwsgi --enable-threads --http :81 -b 32768 --post-buffering 8192 --wsgi-file /opt/mysite/wsgi.py
+
+
+ezh@ezh-VirtualBox:~/project1/cont_app$ cat wsgi.py
+#!/usr/bin/env python
+
+def application(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    return [b'Hello, world!']
+
+ezh@ezh-VirtualBox:~/project1/cont_app$
+
+ezh@ezh-VirtualBox:~/project1/cont_app$ docker build -t myapp .
+Sending build context to Docker daemon   5.12kB
+Step 1/12 : FROM python:3
+ ---> f88b2f81f83a
+Step 2/12 : WORKDIR /opt
  ---> Using cache
- ---> a95c9429b27b
-Step 3/3 : CMD /usr/sbin/nginx -g "daemon off;"
+ ---> 5d5114112273
+Step 3/12 : RUN apt-get update
  ---> Using cache
- ---> b3d7421b94c6
-Successfully built b3d7421b94c6
-Successfully tagged mynginx:latest
+ ---> 3cb4657c4ef0
+Step 4/12 : RUN apt-get install uwsgi -y
+ ---> Using cache
+ ---> a674e0cc66c2
+Step 5/12 : RUN apt-get install libpcre3 libpcre3-dev
+ ---> Using cache
+ ---> a0cc40fb85e9
+Step 6/12 : RUN pip3 install uwsgi
+ ---> Using cache
+ ---> f3eeb05febb0
+Step 7/12 : RUN pip3 install django
+ ---> Using cache
+ ---> b44f120d54bc
+Step 8/12 : RUN django-admin.py startproject mysite
+ ---> Using cache
+ ---> b2631f0f5fc5
+Step 9/12 : COPY ./uwsgi.ini /etc/uwsgi/
+ ---> Using cache
+ ---> 4590ec5871e7
+Step 10/12 : COPY ./wsgi.py ./mysite/
+ ---> Using cache
+ ---> 8bcf01482210
+Step 11/12 : COPY ./start.sh ./mysite/
+ ---> Using cache
+ ---> adff5d9bb3c3
+Step 12/12 : CMD ["./mysite/start.sh"]
+ ---> Using cache
+ ---> 70f31e0921d5
+Successfully built 70f31e0921d5
+Successfully tagged myapp:latest
+ezh@ezh-VirtualBox:~/project1/cont_app$
 
-ezh@ezh-VirtualBox:~/mydocker/conf$ docker run -v ~/mydocker/conf:/app/django-test-app/conf -d --publish=9090:9090 myapp
-8ffe4ae0c223ecc43d522f1fc38c2dbe12400b890a2a48308ec1e3ba8b92fb8a
-ezh@ezh-VirtualBox:~/mydocker$ docker run -v ~/mydocker/conf/:/etc/nginx/conf.d/ -d --publish=80:80  mynginx
-2e452461848b65103de44e440d54b2de140c160f5a1bd419322583e87854005e
+--------------запуск
+
+ezh@ezh-VirtualBox:~/project1/cont_app$ docker run --rm -ti --net mynetwork --name myapp -h myapp  -p 81:81 myapp
+*** Starting uWSGI 2.0.18 (64bit) on [Sun Mar 29 20:52:56 2020] ***
+compiled with version: 8.3.0 on 28 March 2020 23:38:17
+os: Linux-5.3.0-42-generic #34~18.04.1-Ubuntu SMP Fri Feb 28 13:42:26 UTC 2020
+nodename: myapp
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 2
+current working directory: /opt
+detected binary path: /usr/local/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) ***
+*** WARNING: you are running uWSGI without its master process manager ***
+your memory page size is 4096 bytes
+detected max file descriptor number: 1048576
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uWSGI http bound on :81 fd 4
+spawned uWSGI http 1 (pid: 8)
+uwsgi socket 0 bound to TCP address 127.0.0.1:46273 (port auto-assigned) fd 3
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) ***
+Python version: 3.8.2 (default, Feb 26 2020, 14:58:38)  [GCC 8.3.0]
+Python main interpreter initialized at 0x5651de6df650
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) ***
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 109784 bytes (107 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x5651de6df650 pid: 7 (default app)
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) ***
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 7, cores: 1)
+[pid: 7|app: 0|req: 1/1] 172.18.0.2 () {38 vars in 598 bytes} [Sun Mar 29 20:53:29 2020] GET /test1/ => generated 13 bytes in 0 msecs (HTTP/1.0 200) 1 headers in 44 bytes (1 switches on core 0)
+[pid: 7|app: 0|req: 2/2] 172.18.0.1 () {38 vars in 589 bytes} [Sun Mar 29 20:53:32 2020] GET / => generated 13 bytes in 0 msecs (HTTP/1.1 200) 1 headers in 44 bytes (1 switches on core 0)
+[pid: 7|app: 0|req: 3/3] 172.18.0.2 () {38 vars in 598 bytes} [Sun Mar 29 20:53:39 2020] GET /test1/ => generated 13 bytes in 0 msecs (HTTP/1.0 200) 1 headers in 44 bytes (1 switches on core 0)
 
 
-ezh@ezh-VirtualBox:~/mydocker$ docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
-8ffe4ae0c223        myapp               "/app/django-test-ap…"   9 minutes ago       Up 9 minutes        0.0.0.0:9090->9090/tcp   cool_almeida
-f96e6a196421        mynginx             "/bin/sh -c '/usr/sb…"   22 minutes ago      Up 22 minutes       0.0.0.0:80->80/tcp       sweet_austin
 
-zh@ezh-VirtualBox:~/mydocker$ docker run -v ~/mydocker/conf/:/etc/nginx/conf.d/ -ti --publish=80:80  mynginx &
-[1] 10422
-ezh@ezh-VirtualBox:~/mydocker$ fg
-docker run -v ~/mydocker/conf/:/etc/nginx/conf.d/ -ti --publish=80:80 mynginx
-2020/03/25 14:33:35 [error] 7#7: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.17.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:9090/", host: "localhost"
-172.17.0.1 - - [25/Mar/2020:14:33:35 +0000] "GET / HTTP/1.1" 502 157 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0" "-"
-2020/03/25 14:33:53 [error] 7#7: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.17.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:9090/", host: "localhost"
-172.17.0.1 - - [25/Mar/2020:14:33:53 +0000] "GET / HTTP/1.1" 502 157 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0" "-"
+nginx дает ----------
 
----------при заходе на localhost:80 ---------- получаю 502 ошибку
-видно что он , видимо перераправляет запрос на upstream: "http://127.0.0.1:9090/
-Пока что-то не получается задуманный результат. Работаю над ошибками.
-форс мажорные обстоятельства случились. сел за ДЗ только сегодня.
+ezh@ezh-VirtualBox:~/project1/cont_nginx$ docker run --rm -t  --net mynetwork --name nginx -h nginx -p 80:80 nginx
+172.18.0.1 - - [29/Mar/2020:20:53:29 +0000] "GET /test1/ HTTP/1.1" 200 23 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0" "-"
+172.18.0.1 - - [29/Mar/2020:20:53:39 +0000] "GET /test1/ HTTP/1.1" 200 23 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0" "-"
+
+-------------вывод состояния сети контейнеров
+
+ezh@ezh-VirtualBox:~$ docker network inspect mynetwork
+[
+    {
+        "Name": "mynetwork",
+        "Id": "f4c399942323894ed6e10b1377d31dc866da7fb8e999b12177177fa224e3917c",
+        "Created": "2020-03-29T22:19:35.027267078+03:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "e6aa52e831895ee29c5999fb6ef8c5cc327de272a809fe2566cd3627b0bec5c7": {
+                "Name": "nginx",
+                "EndpointID": "69b85fa697aacc94d6a00359add6d85e32f33b2d6929298bf9d45bc696e49f90",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "f9c76585245d2f074607d487120a31825fe862c1a378ba2119e104010ddb0a82": {
+                "Name": "myapp",
+                "EndpointID": "5ea147ba80ca91e64c3934e1884533f2c6a6851c62ce14d3bf15bdc20fa9685e",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+ezh@ezh-VirtualBox:~$
+
+
+
