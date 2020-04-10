@@ -621,5 +621,23 @@ mysql> SELECT count(a.count), b.gender FROM (select count(*) AS count, user_id f
 
 СЕГОДНЯ-ЗАТВРА СДЕЛАЮ Загружу коммитом на GIT.
 
+mysql> select (select concat(last_name,' ',first_name) FROM users where id = profiles.user_id) AS name, ( (select count(*) FROM posts where user_id = profiles.user_id)+ (select count(*) FROM likes where user_id = profiles.user_id)+ (select count(*) FROM messages where from_user_id = profiles.user_id)+ (select count(*) FROM messages where to_user_id = profiles.user_id) ) AS posts_likes_messages     FROM profiles     ORDER BY posts_likes_messages limit 10;
++---------------------+----------------------+
+| name                | posts_likes_messages |
++---------------------+----------------------+
+| Gottlieb Alexzander |                    0 |
+| Watsica Matilda     |                    1 |
+| Howe Brycen         |                    1 |
+| Hayes Zoie          |                    1 |
+| Murphy Maci         |                    1 |
+| Boehm Bette         |                    1 |
+| Stanton Laisha      |                    1 |
+| Johns Annamarie     |                    2 |
+| Marquardt Elmo      |                    2 |
+| Reilly Jody         |                    2 |
++---------------------+----------------------+
+10 rows in set (0,00 sec)
+
+mysql>
 
 
