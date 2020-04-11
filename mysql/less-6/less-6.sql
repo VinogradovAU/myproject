@@ -615,6 +615,30 @@ mysql> SELECT count(a.count), b.gender FROM (select count(*) AS count, user_id f
 +----------------+--------+
 2 rows in set (0,00 sec)
 
+mysql>  SELECT SUM(a.count), b.gender FROM
+    ->  (select count(*) AS count, user_id from likes group by user_id) AS a,
+    ->  (SELECT gender, user_id FROM profiles) AS b
+    ->  WHERE a.user_id=b.user_id group by b.gender;
++--------------+--------+
+| SUM(a.count) | gender |
++--------------+--------+
+|           54 | m      |
+|           46 | f      |
++--------------+--------+
+2 rows in set (0,00 sec)
+
+mysql> SELECT SUM(a.count), b.gender FROM   (select count(*) AS count, user_id from likes group by user_id) AS a,   (SELECT gender, user_id FROM profiles) AS b   WHERE a.user_id=b.user_id group by b.gender limit 1;
++--------------+--------+
+| SUM(a.count) | gender |
++--------------+--------+
+|           54 | m      |
++--------------+--------+
+1 row in set (0,00 sec)
+
+mysql>
+
+
+
 4. Найти 10 пользователей, которые проявляют наименьшую активность в использовании социальной сети.
 
 НЕ УСПЕВАЮ СДЕЛАТЬ к 12.00 10.04.20 ( до 12.00 надо сдать задание)
