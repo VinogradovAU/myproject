@@ -327,7 +327,6 @@ mysql>  SELECT CONCAT(u.first_name," ",u.last_name) AS user,
     ->     count(m.from_user_id)+
     ->     count(media.user_id)+
     ->     count(l.user_id)) AS `user activity`
-    ->     #(COUNT(IFNULL(p.user_id,0)) + COUNT(IFNULL(m.from_user_id,0)) + COUNT(IFNULL(media.user_id,0)) + COUNT(IFNULL(l.user_id,0))) AS `user activity`
     ->
     ->     FROM users AS u
     ->     LEFT JOIN posts AS p
