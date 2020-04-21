@@ -367,3 +367,69 @@ mysql> select * from users limit 5
 mysql> UPDATE  users SET name='Sasha' WHERE id=5;
 ERROR 1142 (42000): UPDATE command denied to user 'shop_read'@'localhost' for table 'users'       <---------------------------только чтение
 mysql>
+2.1 Создайте хранимую функцию hello(), которая будет возвращать приветствие, в зависимости от текущего времени суток.
+С 6:00 до 12:00 функция должна возвращать фразу "Доброе утро", с 12:00 до 18:00 функция должна возвращать фразу
+"Добрый день", с 18:00 до 00:00 — "Добрый вечер", с 00:00 до 6:00 — "Доброй ночи".
+
+mysql> delimiter //
+mysql> CREATE FUNCTION get_version ()
+    -> RETURNS TEXT DETERMINISTIC
+    -> BEGIN
+    ->   RETURN VERSION();
+    -> END//
+Query OK, 0 rows affected (0,02 sec)
+
+mysql> select get_version()//
++---------------+
+| get_version() |
++---------------+
+| 8.0.19        |
++---------------+
+1 row in set (0,00 sec)
+
+delimiter $$
+drop procedure if exists my_func$$
+
+CREATE procedure my_func (IN i int)
+BEGIN
+DECLARE SS TEXT DEFAULT '';
+IF (0 <=i) AND (i<6) THEN SET SS = 'good night';
+END IF;
+IF (6 <=i) AND (i<12) THEN SET SS = 'good morning';
+END IF;
+IF (12<=i) AND (i<18) THEN SET SS='good day';
+END IF;
+IF (18<=i) AND (i<24) THEN SET SS='good evening';
+END IF;
+SELECT SS;
+END$$
+
+call my_func(18)$$   <------------------------тестовая процедура
+
+
+drop procedure if exists my_func_2$$
+CREATE procedure my_func_2 ()
+BEGIN
+DECLARE i INT DEFAULT 0;
+DECLARE SS TEXT DEFAULT '';
+SET i = HOUR(now());
+IF (0 <=i) AND (i<6) THEN SET SS = 'good night';
+END IF;
+IF (6 <=i) AND (i<12) THEN SET SS = 'good morning';
+END IF;
+IF (12<=i) AND (i<18) THEN SET SS='good day';
+END IF;
+IF (18<=i) AND (i<24) THEN SET SS='good evening';
+END IF;
+SELECT SS;
+END$$
+
+
+call my_func_2()$$
+# good evening              <------------------------вывод т.е. hour(now()) = 19
+
+
+2.2 В таблице products есть два текстовых поля: name с названием товара и description с его описанием. Допустимо
+присутствие обоих полей или одно из них. Ситуация, когда оба поля принимают неопределенное значение NULL
+неприемлема. Используя триггеры, добейтесь того, чтобы одно из этих полей или оба поля были заполнены.
+При попытке присвоить полям NULL-значение необходимо отменить операцию.
