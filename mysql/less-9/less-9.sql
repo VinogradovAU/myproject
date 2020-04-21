@@ -222,5 +222,148 @@ mysql> desc posts_table_copy;
 8 rows in set (0,01 sec)
 
 
+1.1 Создайте двух пользователей которые имеют доступ к базе данных shop. Первому пользователю shop_read должны
+быть доступны только запросы на чтение данных, второму пользователю shop — любые операции в пределах базы данных shop.
 
+mysql> CREATE USER shop;
+Query OK, 0 rows affected (0,05 sec)
 
+mysql> CREATE USER shop_read IDENTIFIED WITH sha256_password BY 'pass';
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> select user();
++----------------+
+| user()         |
++----------------+
+| root@localhost |
++----------------+
+1 row in set (0,00 sec)
+mysql> exit
+Bye
+ezh@ezh-VirtualBox:~$ mysql -u shop -p
+Enter password:
+
+mysql> select user();
++----------------+
+| user()         |
++----------------+
+| shop@localhost |
++----------------+
+1 row in set (0,00 sec)
+mysql> select Host, User from mysql.user;
++-----------+------------------+
+| Host      | User             |
++-----------+------------------+
+| %         | shop             |
+| %         | shop_read        |
+| localhost | mysql.infoschema |
+| localhost | mysql.session    |
+| localhost | mysql.sys        |
+| localhost | root             |
++-----------+------------------+
+6 rows in set (0,00 sec)
+
+mysql> GRANT ALL ON shop.* TO shop;      <----------------------пользователь shop - полный доступ к базе shop
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> GRANT SELECT ON shop.* TO shop_read; <-------------------пользователь shop_read - только чтение базы shop
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> exit
+Bye
+ezh@ezh-VirtualBox:~$ mysql -u shop -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 50
+Server version: 8.0.19 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> USE shop;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> select user();
++----------------+
+| user()         |      <---------------------------текущий пользователь shop
++----------------+
+| shop@localhost |
++----------------+
+1 row in set (0,00 sec)
+
+mysql>  show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| shop               |   <---------------------------может работать только с базой shop
++--------------------+
+2 rows in set (0,00 sec)
+
+mysql>
+
+mysql> UPDATE  users SET name='Andry' WHERE id=5;
+Query OK, 1 row affected (0,01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from users limit 5;
++----+--------------------+-------------+---------------------+---------------------+
+| id | name               | birthday_at | created_at          | updated_at          |
++----+--------------------+-------------+---------------------+---------------------+
+|  1 | Геннадий           | 1990-10-05  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  2 | Наталья            | 1984-11-12  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  3 | Александр          | 1985-05-20  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  4 | Сергей             | 1988-02-14  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  5 | Andry              | 1998-01-12  | 2020-04-12 22:04:13 | 2020-04-21 15:17:00 |
++----+--------------------+-------------+---------------------+---------------------+
+5 rows in set (0,00 sec)
+
+mysql>
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> select user();
++---------------------+
+| user()              |
++---------------------+
+| shop_read@localhost |     <---------------------------текущий пользователь shop_read
++---------------------+
+1 row in set (0,00 sec)
+
+mysql>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| shop               |      <---------------------------может работать только с базой shop
++--------------------+
+2 rows in set (0,01 sec)
+mysql> USE shop;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> select * from users limit 5
+    -> ;
++----+--------------------+-------------+---------------------+---------------------+
+| id | name               | birthday_at | created_at          | updated_at          |
++----+--------------------+-------------+---------------------+---------------------+
+|  1 | Геннадий           | 1990-10-05  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  2 | Наталья            | 1984-11-12  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  3 | Александр          | 1985-05-20  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  4 | Сергей             | 1988-02-14  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  5 | Andry              | 1998-01-12  | 2020-04-12 22:04:13 | 2020-04-21 15:17:00 |
++----+--------------------+-------------+---------------------+---------------------+
+5 rows in set (0,00 sec)
+
+mysql> UPDATE  users SET name='Sasha' WHERE id=5;
+ERROR 1142 (42000): UPDATE command denied to user 'shop_read'@'localhost' for table 'users'       <---------------------------только чтение
+mysql>
