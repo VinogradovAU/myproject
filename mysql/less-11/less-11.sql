@@ -442,4 +442,41 @@ ERROR 3 (HY000): Error writing file '/tmp/MYfd=849' (OS errno 28 - No space left
 mysql> PURGE MASTER LOGS BEFORE '2020-04-27 01:00:00';
 Query OK, 0 rows affected, 1 warning (0,01 sec)
 
+#-----------------------------------
+nano ./mysql.conf.d/mysqld.cnf
+tmp_table_size = 256M
+service mysqld restart
+#-----------------------------------
 
+mysql> SHOW VARIABLES LIKE 'tmp%';
++----------------+-----------+
+| Variable_name  | Value     |
++----------------+-----------+
+| tmp_table_size | 268435456 |
+| tmpdir         | /tmp      |
++----------------+-----------+
+2 rows in set (0,00 sec)
+
+SET GLOBAL tmp_table_size = 1024 * 1024 * 512;
+SET GLOBAL max_heap_table_size = 1024 * 1024 * 512;
+
+mysql> SHOW VARIABLES LIKE 'tmp%';
++----------------+-----------+
+| Variable_name  | Value     |
++----------------+-----------+
+| tmp_table_size | 536870912 |
+| tmpdir         | /tmp      |
++----------------+-----------+
+2 rows in set (0,00 sec)
+
+mysql> SHOW VARIABLES LIKE 'max_heap%';
++---------------------+-----------+
+| Variable_name       | Value     |
++---------------------+-----------+
+| max_heap_table_size | 536870912 |
++---------------------+-----------+
+1 row in set (0,00 sec)
+
+все равно ошибка при попытке сгенерить и вставить 1 млн. записей:
+
+ERROR 3 (HY000): Error writing file '/tmp/MYfd=813' (OS errno 28 - No space left on device)
