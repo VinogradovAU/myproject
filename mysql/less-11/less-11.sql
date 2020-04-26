@@ -196,4 +196,250 @@ mysql> select * from log;
 
 mysql>
 
+# 2. (по желанию) Создайте SQL-запрос, который помещает в таблицу users миллион записей.
+
+--------------------mysql workbench---------------------- тренировка на тестовой таблице
+
+SHOW tables;
+DROP TABLE if exists test1;
+
+
+CREATE TABLE test1 (
+id int unsigned NOT NULL auto_increment,
+`name` VARCHAR(100),
+`birthday_at` date DEFAULT NULL COMMENT 'Дата рождения',
+primary key (`id`)
+) engine=InnoDB;
+
+select * from test1;
+
+INSERT INTO test1 (name, birthday_at)
+SELECT nn.cc, bb.dd
+from
+(select concat('andry', n0.n + 10*n1.n + 100*n2.n + 1000*n3.n) as cc, (n0.n + 10*n1.n + 100*n2.n + 1000*n3.n) as num_num_1
+	from
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n0
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n1
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n2
+    JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n3
+
+    ) AS nn
+JOIN
+(select DATE_ADD(CURDATE(), INTERVAL n0.n + 10*n1.n + 100*n2.n + 1000*n3.n DAY) AS dd, (n0.n + 10*n1.n + 100*n2.n + 1000*n3.n) as num_num_2
+from
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n0
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n1
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n2
+    JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n3
+
+    ) AS bb
+    ON nn.num_num_1 = bb.num_num_2;
+
+
+--------------------mysql workbench---------------------- тренировка на тестовой таблице
+
+
+
+mysql> INSERT INTO test1 (name, birthday_at)
+    -> SELECT nn.cc, bb.dd
+    -> from
+    -> (select concat('andry', n0.n + 10*n1.n + 100*n2.n + 1000*n3.n) as cc, (n0.n + 10*n1.n + 100*n2.n + 1000*n3.n) as num_num_1
+    -> from
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n0
+    ->
+Display all 846 possibilities? (y or n)
+    -> JOIN
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n1
+    ->
+Display all 846 possibilities? (y or n)
+    -> JOIN
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n2
+    ->     JOIN
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n3
+    ->
+    ->     ) AS nn
+    -> JOIN
+    -> (select DATE_ADD(CURDATE(), INTERVAL n0.n + 10*n1.n + 100*n2.n + 1000*n3.n DAY) AS dd, (n0.n + 10*n1.n + 100*n2.n + 1000*n3.n) as num_num_2
+    -> from
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n0
+    ->
+Display all 846 possibilities? (y or n)
+    -> JOIN
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n1
+    ->
+Display all 846 possibilities? (y or n)
+    -> JOIN
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n2
+    ->     JOIN
+    -> (select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+    -> union all select 6 union all select 7 union all select 8 union all select 9) AS n3
+    ->
+    ->     ) AS bb
+    ->     ON nn.num_num_1 = bb.num_num_2;
+Query OK, 10000 rows affected (21,17 sec)
+Records: 10000  Duplicates: 0  Warnings: 0
+
+
+mysql> select * from test1 limit 1, 20;
++----+-----------+-------------+
+| id | name      | birthday_at |
++----+-----------+-------------+
+|  2 | andry100  | 2020-08-05  |
+|  3 | andry1100 | 2023-05-02  |
+|  4 | andry200  | 2020-11-13  |
+|  5 | andry1200 | 2023-08-10  |
+|  6 | andry300  | 2021-02-21  |
+|  7 | andry1300 | 2023-11-18  |
+|  8 | andry400  | 2021-06-01  |
+|  9 | andry1400 | 2024-02-26  |
+| 10 | andry500  | 2021-09-09  |
+| 11 | andry1500 | 2024-06-05  |
+| 12 | andry600  | 2021-12-18  |
+| 13 | andry1600 | 2024-09-13  |
+| 14 | andry700  | 2022-03-28  |
+| 15 | andry1700 | 2024-12-22  |
+| 16 | andry1800 | 2025-04-01  |
+| 17 | andry1900 | 2025-07-10  |
+| 18 | andry10   | 2020-05-07  |
+| 19 | andry1000 | 2023-01-22  |
+| 20 | andry110  | 2020-08-15  |
+| 21 | andry1110 | 2023-05-12  |
++----+-----------+-------------+
+20 rows in set (0,00 sec)
+
+mysql> select count(*) AS count FROM (select * FROM test1) as nn;
++-------+
+| count |
++-------+
+| 10000 |
++-------+
+1 row in set (0,01 sec)
+
+mysql> select count(*) AS count FROM (select DISTINCT * FROM test1) as nn;
++-------+
+| count |
++-------+
+| 10000 |
++-------+
+1 row in set (0,00 sec)
+
+mysql> select count(*) AS count FROM (select DISTINCT name FROM test1) as nn;
++-------+
+| count |
++-------+
+| 10000 |
++-------+
+1 row in set (0,01 sec)
+
+mysql> select count(*) AS count FROM (select DISTINCT birthday_at FROM test1) as nn;
++-------+
+| count |
++-------+
+| 10000 |
++-------+
+1 row in set (0,01 sec)
+
+CREATE TABLE `users_old` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL COMMENT 'Имя покупателя',
+  `birthday_at` date DEFAULT NULL COMMENT 'Дата рождения',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Покупатели' ;
+
+insert into users_old select * from users;
+
+mysql> select * from users_old;
++----+--------------------+-------------+---------------------+---------------------+
+| id | name               | birthday_at | created_at          | updated_at          |
++----+--------------------+-------------+---------------------+---------------------+
+|  1 | Геннадий           | 1990-10-05  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  2 | Наталья            | 1984-11-12  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  3 | Александр          | 1985-05-20  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  4 | Сергей             | 1988-02-14  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  5 | Andry              | 1998-01-12  | 2020-04-12 22:04:13 | 2020-04-21 15:17:00 |
+|  6 | Мария              | 1992-08-29  | 2020-04-12 22:04:13 | 2020-04-12 22:04:13 |
+|  7 | Vasya              | 2014-10-08  | 2020-04-26 21:36:51 | 2020-04-26 21:36:51 |
++----+--------------------+-------------+---------------------+---------------------+
+7 rows in set (0,00 sec)
+
+mysql>
+
+#----------------------------ЗАПРОС ВСТАВКИ 1000 000 записей в таблицу users---------------------------
+INSERT INTO users (name, birthday_at)
+SELECT nn.cc, bb.dd
+from
+(select concat('andry', n0.n + 10*n1.n + 100*n2.n + 1000*n3.n + 10000*n4.n + 10000*n5.n) as cc, (n0.n + 10*n1.n + 100*n2.n + 1000*n3.n + 10000*n4.n + 10000*n5.n) as num_num_1
+	from
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n0
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n1
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n2
+    JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n3
+     JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n4
+     JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n5
+
+    ) AS nn
+JOIN
+(select DATE_ADD(CURDATE(), INTERVAL n0.n + 10*n1.n + 100*n2.n + 1000*n3.n + 10000*n4.n + 10000*n5.n DAY) AS dd, (n0.n + 10*n1.n + 100*n2.n + 1000*n3.n + 10000*n4.n + 10000*n5.n) as num_num_2
+from
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n0
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n1
+		JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n2
+    JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n3
+     JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n4
+     JOIN
+	(select 0 as n union all select 1 union all select 2 union all select 3 union all select 4 union all select 5
+	union all select 6 union all select 7 union all select 8 union all select 9) AS n5
+
+    ) AS bb
+    ON nn.num_num_1 = bb.num_num_2;
+
+ERROR 3 (HY000): Error writing file '/tmp/MYfd=849' (OS errno 28 - No space left on device)
+
+mysql> PURGE MASTER LOGS BEFORE '2020-04-27 01:00:00';
+Query OK, 0 rows affected, 1 warning (0,01 sec)
+
 
