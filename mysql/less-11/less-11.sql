@@ -480,3 +480,181 @@ mysql> SHOW VARIABLES LIKE 'max_heap%';
 все равно ошибка при попытке сгенерить и вставить 1 млн. записей:
 
 ERROR 3 (HY000): Error writing file '/tmp/MYfd=813' (OS errno 28 - No space left on device)
+
+#ПОКА НЕ СМОГ РАЗРЕШИТЬ ПРОБЛЕМУ С ОШИБКОЙ
+# ------------------------------------------------------------------------
+
+Практическое задание по теме “NoSQL”
+# 1. В базе данных Redis подберите коллекцию для подсчета посещений с определенных IP-адресов.
+
+IP адреса можно хранить используя множество , что бы небыло повторений
+my-redis:6379> SADD ipaddr 172.10.2.5
+(integer) 1
+my-redis:6379> SADD ipaddr 172.10.2.6
+(integer) 1
+my-redis:6379> SADD ipaddr 172.10.2.7
+(integer) 1
+my-redis:6379> SMEMBERS ipaddr
+1) "172.10.2.6"
+2) "172.10.2.7"
+3) "172.10.2.5"
+my-redis:6379> SADD ipaddr 172.10.2.7
+(integer) 0
+my-redis:6379> SADD ipaddr 172.10.2.6
+(integer) 0
+my-redis:6379> SMEMBERS ipaddr
+1) "172.10.2.6"
+2) "172.10.2.7"
+3) "172.10.2.5"
+my-redis:6379>
+
+
+#HSET имя_ключа имя_атрибута значение
+
+my-redis:6379> HSET ip_log 172.10.2.5 0
+(integer) 1
+my-redis:6379> HSET ip_log 172.10.2.6 0
+(integer) 1
+my-redis:6379> HSET ip_log 172.10.2.7 0
+(integer) 1
+my-redis:6379> KEYS *
+1) "ip_log"
+2) "obj"
+3) "objects"
+my-redis:6379> HGETALL ip_log
+1) "172.10.2.5"
+2) "0"
+3) "172.10.2.6"
+4) "0"
+5) "172.10.2.7"
+6) "0"
+my-redis:6379>
+
+HINCRBY KEY_NAME FIELD_NAME INCR_BY_NUMBER  # используем инкремент
+
+my-redis:6379> hincrby ip_log 172.10.2.5 1
+(integer) 1
+my-redis:6379> hincrby ip_log 172.10.2.5 1
+(integer) 2
+my-redis:6379> hincrby ip_log 172.10.2.5 1
+(integer) 3
+my-redis:6379> HGETALL ip_log
+1) "172.10.2.5"
+2) "3"
+3) "172.10.2.6"
+4) "0"
+5) "172.10.2.7"
+6) "0"
+my-redis:6379> HGET ip_log 172.10.2.5
+"3"
+my-redis:6379> hincrby ip_log 172.10.2.5 10
+(integer) 13
+my-redis:6379> HGET ip_log 172.10.2.5
+"13"
+my-redis:6379>
+
+# 2. При помощи базы данных Redis решите задачу поиска имени пользователя по электронному
+адресу и наоборот, поиск электронного адреса пользователя по его имени.
+my-redis:6379> HSET users vasya vasya@mail.ru
+(integer) 1
+my-redis:6379> HSET users dima dima@mail.ru
+(integer) 1
+my-redis:6379> HSET users kostya kostay@yandex.ru
+(integer) 1
+my-redis:6379> HSET users olya olya@yandex.ru
+(integer) 1
+my-redis:6379> HSET users nastya nastya@gmailcom
+(integer) 1
+my-redis:6379> HSET users nastya natya@gmail.com
+(integer) 0
+my-redis:6379> HSET users ira ira@yahoo.com
+(integer) 1
+my-redis:6379> HGETALL users
+ 1) "vasya"
+ 2) "vasya@mail.ru"
+ 3) "dima"
+ 4) "dima@mail.ru"
+ 5) "kostya"
+ 6) "kostay@yandex.ru"
+ 7) "olya"
+ 8) "olya@yandex.ru"
+ 9) "nastya"
+10) "natya@gmail.com"
+11) "ira"
+12) "ira@yahoo.com"
+my-redis:6379> HSET users ira@yahoo.com ira
+(integer) 1
+my-redis:6379> HSET users natya@gmail.com nastya
+(integer) 1
+my-redis:6379> HSET users olya@yandex.ru olya
+(integer) 1
+my-redis:6379> HSET users kostay@yandex.ru kostya
+(integer) 1
+my-redis:6379> HSET users dima@mail.ru dima
+(integer) 1
+my-redis:6379> HGETALL users
+ 1) "vasya"
+ 2) "vasya@mail.ru"
+ 3) "dima"
+ 4) "dima@mail.ru"
+ 5) "kostya"
+ 6) "kostay@yandex.ru"
+ 7) "olya"
+ 8) "olya@yandex.ru"
+ 9) "nastya"
+10) "natya@gmail.com"
+11) "ira"
+12) "ira@yahoo.com"
+13) "ira@yahoo.com"
+14) "ira"
+15) "natya@gmail.com"
+16) "nastya"
+17) "olya@yandex.ru"
+18) "olya"
+19) "kostay@yandex.ru"
+20) "kostya"
+21) "dima@mail.ru"
+22) "dima"
+
+my-redis:6379> HGET users dima
+"dima@mail.ru"
+my-redis:6379> HGET users dima@mail.ru
+"dima"
+my-redis:6379> HGET users ira
+"ira@yahoo.com"
+my-redis:6379> HGET users ira@yahoo.com
+"ira"
+my-redis:6379>
+
+# 3. Организуйте хранение категорий и товарных позиций учебной базы данных shop в СУБД MongoDB.
+
+> show databases
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> db.shop.insert({category:'процессоры', name:'Intel Core i3-8100', desc:'description of intel core i3-8100', price:12000,created_at:Date.now()})
+WriteResult({ "nInserted" : 1 })
+> db.shop.find()
+{ "_id" : ObjectId("5ea75d26b1bc84ffb208712a"), "category" : "процессоры", "name" : "Intel Core i3-8100", "desc" : "description of intel core i3-8100", "price" : 12000, "created_at" : 1588026662495 }
+> db.shop.insert({category:'процессоры', name:'Intel Core i7', desc:'description of intel core i7', price:22000,created_at:Date()})
+WriteResult({ "nInserted" : 1 })
+> db.shop.find()
+{ "_id" : ObjectId("5ea75d26b1bc84ffb208712a"), "category" : "процессоры", "name" : "Intel Core i3-8100", "desc" : "description of intel core i3-8100", "price" : 12000, "created_at" : 1588026662495 }
+{ "_id" : ObjectId("5ea75d61b1bc84ffb208712b"), "category" : "процессоры", "name" : "Intel Core i7", "desc" : "description of intel core i7", "price" : 22000, "created_at" : "Tue Apr 28 2020 01:32:01 GMT+0300 (MSK)" }
+> db.shop.insert({category:'материнские платы', name:'ASUS ROG Maximus Z370', desc:'Материнская плата описание характеристик ', price:19200,created_at:Date()})
+WriteResult({ "nInserted" : 1 })
+> db.shop.find()
+{ "_id" : ObjectId("5ea75d26b1bc84ffb208712a"), "category" : "процессоры", "name" : "Intel Core i3-8100", "desc" : "description of intel core i3-8100", "price" : 12000, "created_at" : 1588026662495 }
+{ "_id" : ObjectId("5ea75d61b1bc84ffb208712b"), "category" : "процессоры", "name" : "Intel Core i7", "desc" : "description of intel core i7", "price" : 22000, "created_at" : "Tue Apr 28 2020 01:32:01 GMT+0300 (MSK)" }
+{ "_id" : ObjectId("5ea75de1b1bc84ffb208712c"), "category" : "материнские платы", "name" : "ASUS ROG Maximus Z370", "desc" : "Материнская плата описание характеристик ", "price" : 19200, "created_at" : "Tue Apr 28 2020 01:34:09 GMT+0300 (MSK)" }
+> db.shop.find({category:"процессоры"})
+{ "_id" : ObjectId("5ea75d26b1bc84ffb208712a"), "category" : "процессоры", "name" : "Intel Core i3-8100", "desc" : "description of intel core i3-8100", "price" : 12000, "created_at" : 1588026662495 }
+{ "_id" : ObjectId("5ea75d61b1bc84ffb208712b"), "category" : "процессоры", "name" : "Intel Core i7", "desc" : "description of intel core i7", "price" : 22000, "created_at" : "Tue Apr 28 2020 01:32:01 GMT+0300 (MSK)" }
+> db.shop.find({category:"материнские платы"})
+{ "_id" : ObjectId("5ea75de1b1bc84ffb208712c"), "category" : "материнские платы", "name" : "ASUS ROG Maximus Z370", "desc" : "Материнская плата описание характеристик ", "price" : 19200, "created_at" : "Tue Apr 28 2020 01:34:09 GMT+0300 (MSK)" }
+> show databases
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+shop    0.000GB
+>
