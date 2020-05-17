@@ -9,23 +9,24 @@ while True:
     b = 0  # переменная для суммы нечетных числе
     x = input("введите натуральное число: ")
     xx = x  # сохраним число для принта в конце
-    if (str(x) == 'q'):
+    if str(x) == 'q':
         print('ВЫХОД')
         break
 
-    if (x.isdigit() != True) or int(x) == 0  or int(x) < 0:
+    if x.isdigit() != True or int(x) == 0  or int(x) < 0:
         print(f'{x} не натуральное число. Попробуйте еще раз')
         continue
     x = int(x)
 
     while True:
 
-        if ((x % 10) % 2 == 0):
+        #if (x % 10) % 2 == 0:
+        if x % 2 == 0:
             a = a + 1
         else:
             b = b + 1
         x = x // 10
-        if (x == 0):
+        if x == 0:
             print(f'Число {xx} содержит количество четных цифр - {a}, нечетных - {b}')
             break
 
