@@ -3,11 +3,11 @@
 # 3. Сформировать из введенного числа обратное по порядку входящих в него цифр и вывести на экран.
 # Например, если введено число 3486, надо вывести 6843
 
-def my_revirse(X):
-    if (X // 10 == 0):
-        return str(X)
+def my_revirse(x):
+    if x // 10 == 0:
+        return str(x)
     else:
-        return str(X % 10) + str(my_revirse(X // 10))
+        return str(x % 10) + str(my_revirse(x // 10))
 
 
 a = int(input('Введите целое число: '))
