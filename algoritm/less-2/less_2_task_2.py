@@ -12,10 +12,11 @@ while True:
     if (str(x) == 'q'):
         print('ВЫХОД')
         break
-    x = int(x)
-    if (x == 0):
-        print('Ноль не натуральное число. Попробуйте еще раз')
+
+    if (x.isdigit() != True) or int(x) == 0  or int(x) < 0:
+        print(f'{x} не натуральное число. Попробуйте еще раз')
         continue
+    x = int(x)
 
     while True:
 
