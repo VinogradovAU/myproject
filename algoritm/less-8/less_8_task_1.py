@@ -18,7 +18,7 @@ def my_sort(massive):
 
 ss = 'beep boop beer!'
 print(f'Будем кодировать фразу: {ss}')
-#ss = 'very very bad news!'
+# ss = 'very very bad news!'
 input_data = ss
 dd = deque()
 ss = dict(Counter(ss))
@@ -37,9 +37,10 @@ output = ss.copy()
 
 k = 0  # признак того что массив кончился и остался один узел
 j = len(ss)
-my_tree = []
+my_tree = []  # тут будем складывать ужлы - выращивать дерево
 
-while True:
+while True:  # тут будем пробегаться по последоательности - коллекции, сортировать, брать 2
+    # крайних значения, создавать из них новый узел, проверять нужно ли этот узел соеденить с уже созданными
     print(f'k={k}')
     print(f'j={j}')
 
@@ -59,15 +60,15 @@ while True:
     else:
         tmp_node_1 = 0
         tmp_node_2 = 0
-        for id in my_tree:
+        for id in my_tree:  # перебор уже созданных узлов
             if ss[0][0] == id.data:
-                tmp_node_1 = id
+                tmp_node_1 = id  # сюда кладем объект узла, если с ним надо сделать связь
                 print(f'{ss[0][0]} совпало')
             if ss[1][0] == id.data:
-                tmp_node_2 = id
+                tmp_node_2 = id  # сюда кладем объект узла, если с ним надо сделать связь
                 print(f'{ss[1][0]} совпало')
 
-        if tmp_node_1 != 0 and tmp_node_2 != 0:
+        if tmp_node_1 != 0 and tmp_node_2 != 0:  # если есть 2 узла, которые надо связать с новым узлом
             if tmp_node_1.value > tmp_node_2.value:
                 my_tree.append(MyNode(tmp_node_1.value + tmp_node_2.value, left=tmp_node_2, right=tmp_node_1,
                                       data=tmp_node_1.data + tmp_node_2.data))
@@ -75,7 +76,7 @@ while True:
                 my_tree.append(MyNode(tmp_node_1.value + tmp_node_2.value, left=tmp_node_1, right=tmp_node_2,
                                       data=tmp_node_1.data + tmp_node_2.data))
 
-        if tmp_node_1 != 0 and tmp_node_2 == 0:
+        if tmp_node_1 != 0 and tmp_node_2 == 0:  # если с новым узлом надо связать только один существующий
             if tmp_node_1.value > ss[1][1]:
                 my_tree.append(MyNode(tmp_node_1.value + ss[1][1], left=ss[1][0], right=tmp_node_1,
                                       data=tmp_node_1.data + str(ss[1][0])))
@@ -83,14 +84,15 @@ while True:
                 my_tree.append(MyNode(tmp_node_1.value + ss[1][1], left=tmp_node_1, right=ss[1][0],
                                       data=tmp_node_1.data + str(ss[1][0])))
 
-        if tmp_node_1 == 0 and tmp_node_2 != 0:
+        if tmp_node_1 == 0 and tmp_node_2 != 0:  # если с новым узлом надо связать только один существующий
             if tmp_node_2.value > ss[0][1]:
                 my_tree.append(MyNode(tmp_node_1.value + ss[0][1], left=ss[1][0], right=tmp_node_2,
                                       data=tmp_node_2.data + str(ss[0][0])))
             elif tmp_node_2.value <= ss[0][1]:
                 my_tree.append(MyNode(tmp_node_2.value + ss[0][1], left=tmp_node_2, right=ss[0][0],
                                       data=str(ss[0][0] + tmp_node_2.data)))
-        if tmp_node_1 == 0 and tmp_node_2 == 0:
+
+        if tmp_node_1 == 0 and tmp_node_2 == 0:  # если с новым узлом не связаны другие узлы - только лепестки
             my_tree.append(MyNode(ss[0][1] + ss[1][1], left=ss[0][0], right=ss[1][0],
                                   data=str(ss[0][0]) + str(ss[1][0])))
 
@@ -122,12 +124,13 @@ for jj in range(len(my_tree)):
     k -= 1
 
 
-def search(my_tree):
+def search(my_tree):  # функция просмотра свего дерева, до каждого листочка и формирование кодо Хоффмана
+    # возвращвет таблицу кодировки
     print(my_tree.__dict__)
 
     qq = 0
 
-    if 'MyNode' in str(my_tree.__dict__['left']):
+    if 'MyNode' in str(my_tree.__dict__['left']):  # левое ребро является объектом
         if my_tree.head == 1:
             my_tree.start_c = None
 
@@ -142,7 +145,7 @@ def search(my_tree):
         print(f'узел:{my_tree.data},{my_tree.value}, слева {my_tree.left} лепесток, {my_tree.start_c + "0"}')
         output_m[my_tree.left] = my_tree.start_c + "0"
 
-    if 'MyNode' in str(my_tree.__dict__['right']):
+    if 'MyNode' in str(my_tree.__dict__['right']):  # правое ребро является объектом
         if my_tree.head == 1:
             my_tree.start_c = None
 
@@ -158,7 +161,6 @@ def search(my_tree):
         print(f'узел: {my_tree.data},{my_tree.value},справа {my_tree.right} лепесток, {my_tree.start_c + "1"}')
         output_m[my_tree.right] = my_tree.start_c + "1"
     return output_m
-
 
 
 for i in my_tree_revers:
@@ -188,3 +190,6 @@ print(output_code)
 # Кодируемая последовательность: beep boop beer!
 # Результат кодировки:
 # 00 01 01 100 101 00 111 111 100 101 00 01 01 1100 1101
+
+
+# В выводе много лишней инфоромации, но она мне помогала отлаживать алгоритм
