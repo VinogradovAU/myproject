@@ -13,7 +13,7 @@ class MyNode:
 
 
 def my_sort(massive):
-    return sorted(ss.items(), key=operator.itemgetter(1), reverse=False)
+    return sorted(massive.items(), key=operator.itemgetter(1), reverse=False)
 
 
 ss = 'beep boop beer!'
