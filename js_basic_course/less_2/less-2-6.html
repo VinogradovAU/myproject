@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+        let x = +prompt("Введите целое число больше нуля: ");
+
+        /*
+        0 - рублей
+        1 - рубль
+        2 - рубля
+        3 - рубля
+        4 - рубля
+        5 - рублей
+        6 - рублей
+        7 - рублей
+        8 - рублей
+        9 - рублей
+        
+        11 - рублей
+        12 - рублей
+        13 - рублей
+        14 - рублей
+        
+        
+        */
+
+        let ss = String(x); //перевод в строку
+
+
+        let rubl = "рублей"; //задал значение по умолчанию
+        let tmp = ss[ss.length - 1]; //взял последнюю цифру 
+
+
+        //по последний цифре в свиче выбирается правильный падеж
+        switch (tmp) {
+            case "1":
+                rubl = "рубль";
+                break
+
+            case "2":
+            case "3":
+            case "4":
+                rubl = "рубля";
+                break
+
+        }
+
+        //по последн им двум цифрам в свиче выбирается правильный падеж 
+        if (ss.length > 1) {
+            let ss_2 = ss[ss.length - 2] + ss[ss.length - 1];
+            switch (ss_2) {
+                case "11":
+                case "12":
+                case "13":
+                case "14":
+                    rubl = "рублей";
+                    break
+            }
+
+        }
+
+        alert("Ваша сумма в " + ss + " " + rubl + " зачислена.");
+
+
+
+
+        //проверка
+        /*
+            rubl = "рублей";
+
+            for (let i = 0; i <= 9; i++) {
+                switch (String(i)) {
+                    case "1":
+                        rubl = "рубль";
+                        break
+
+                    case "2":
+                    case "3":
+                    case "4":
+                        rubl = "рубля";
+                        break
+
+
+                }
+                let test_str = "Ваша сумма в " + i + " " + rubl + " зачислена.";
+                console.log(test_str);
+                rubl = "рублей";
+            }
+        */
+
+    </script>
+
+</body>
+
+</html>

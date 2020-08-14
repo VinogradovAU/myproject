@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+
+        //функция складывает 2 числа и возвращяет результат
+        function summ(a, b) {
+
+            return a + b;
+        }
+
+        //функция вычитает 2 числа и возвращяет результат
+        function sub(a, b) {
+            return a - b;
+        }
+
+        //функция перемножает 2 числа и возвращяет результат
+        function mult(x, y) {
+            return x * y;
+        }
+
+        //функция выполняет деление одного числа на другое и выводит результат
+
+        function div(x, y) {
+            if (y == 0) {
+                return "Деление на 0 запрещено";
+            }
+            return x / y;
+        }
+
+        alert(summ(2, 3)); //5
+        alert(sub(14, 4)); //10
+        alert(mult(3, 6)); //18
+        alert(div(5, 0)); //деление на 0
+        alert(div(4, 2)); // 2
+    </script>
+
+</body></html>
