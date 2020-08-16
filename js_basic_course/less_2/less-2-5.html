@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+        //функция складывает 2 числа и возвращяет результат
+        function summ(a, b) {
+
+            return a + b;
+        }
+
+        //функция вычитает 2 числа и возвращяет результат
+        function sub(a, b) {
+            return a - b;
+        }
+
+        //функция перемножает 2 числа и возвращяет результат
+        function mult(x, y) {
+            return x * y;
+        }
+
+        //функция выполняет деление одного числа на другое и выводит результат
+
+        function div(x, y) {
+            if (y == 0) {
+                return "Деление на 0 запрещено";
+            }
+            return x / y;
+        }
+
+        function mathOperation(arg1, arg2, operation) {
+            switch (operation) {
+                case "+":
+                    alert(summ(arg1, arg2));
+                    break
+                case "-":
+                    alert(sub(arg1, arg2));
+                    break
+                case "*":
+                    alert(mult(arg1, arg2));
+                    break
+                case "/":
+                    alert(div(arg1, arg2));
+                    break
+                default:
+                    alert("заданы не верные агрументы");
+                    break
+
+            }
+        }
+
+        mathOperation(22, 12, "-");
+        mathOperation(3, 4, "+");
+        mathOperation(3, 3, "*");
+        mathOperation(6, 2, "/");
+        mathOperation(6, 0, "/");
+        mathOperation(6, 0, "");
+        mathOperation(6, 0, "asda");
+        mathOperation(6, 0, 2);
+    </script>
+</body></html>
