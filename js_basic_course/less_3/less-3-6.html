@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use ctrict";
+
+        function xxx(i) {
+            if (i > 9) {
+                return false; //i больше 9 выходим из цикла
+            } else {
+                console.log(i); //выводим i, в цикле будет 0, 1, 2, 3.....
+                return true;
+            }
+        }
+
+
+        //в условиях цикла вызываем функцию ххх и передаем ей i на каждой итерации цикла
+        for (let i = 0; xxx(i); i++) {
+
+        }
+
+    </script>
+
+</body>
+
+</html>
