@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+
+        let num = +prompt("Введите число от 0 до 999: "); //Запрос числа у пользователя
+
+        if (Number.isInteger(num) == true && 0 < num && num < 1000) { //проверка, что ввели целое число от 0 до 999
+
+            console.log("Вы ввели число:" + num);
+
+            const obj_1 = new obj(num); //создаем объект из числа
+
+            console.log("units: " + obj_1.units); //вывод отдельно единиц
+            console.log("tens: " + obj_1.tens); //вывод дедсятков
+            console.log("hundreds: " + obj_1.hundreds); //вывод сотен
+            console.log(obj_1);
+
+        } else {
+            console.log("Ошибка! Вы ввели не верные данные!");
+        };
+
+
+        function obj(num) { //генератор объекта
+
+            this.units = num % 10;
+            this.tens = Math.floor(num / 10) % 10;
+            this.hundreds = Math.floor(Math.floor(num / 10) / 10);
+
+        };
+
+    </script>
+
+</body>
+
+</html>

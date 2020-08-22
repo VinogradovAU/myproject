@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+
+        //ванриант 1
+
+        function Product(name, price) {
+            this.name = name;
+            this.price = price;
+            this.makeDiscount = function makeDiscount(discount) {
+                this.price = this.price - this.price / 100 * discount;
+            };
+            this.make25PersentDiscount = function makeDiscount() {
+                this.price = this.price - this.price / 100 * 25;
+            };
+        };
+
+
+        const products = [
+            new Product('name1', 200),
+            new Product('name2', 200),
+            new Product('name3', 200)
+        ]
+        console.log("вариант_1:");
+
+        for (let product of products) {
+            console.log(product);
+        }
+        console.log("Скидка 20%:");
+
+        for (let product of products) {
+            product.makeDiscount(20);
+            console.log(product);
+        }
+
+
+        console.log("Сделаем еще скидку 25%:");
+        for (let product of products) {
+            product.make25PersentDiscount();
+            console.log(product);
+        }
+
+
+        //ванриант 2  
+
+
+        let Disc_2 = { //объект прототипа
+            makeDiscount_2: function(discount) {
+                this.price = this.price - this.price / 100 * discount;
+            },
+            make25PersentDiscount_2: function() {
+                this.price = this.price - this.price / 100 * 25;
+            }
+        };
+
+        function Prod_2(name, price) {
+            this.name = name;
+            this.price = price;
+        };
+
+        Prod_2.prototype = Disc_2; // функция Disc_2 будет помещена в прототип под __proto__
+
+        const products_2 = [
+            new Prod_2('name4', 100),
+            new Prod_2('name5', 100),
+            new Prod_2('name6', 100)
+        ];
+        console.log("вариант_2:");
+
+
+
+        for (let product of products_2) {
+            console.log(product);
+        };
+
+        console.log("Скидка 20%:");
+        for (let product of products_2) {
+            product.makeDiscount_2(20); //функция будет найдена под __proto__ вызвана
+            console.log(product);
+        };
+
+
+        //сделаем скидку 25%
+        console.log("Сделаем еще скидку 25%:");
+        for (let product of products_2) {
+            product.make25PersentDiscount_2(); //функция будет найдена под __proto__ вызвана
+            console.log(product);
+        };
+
+    </script>
+
+</body>
+
+</html>
