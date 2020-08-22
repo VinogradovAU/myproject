@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+
+        const products = [{
+                id: 3,
+                price: 200,
+            },
+            {
+                id: 4,
+                price: 900,
+            },
+            {
+                id: 1,
+                price: 1000,
+            }
+
+        ]
+
+        //вывожу старые и новые цены
+        products.forEach(
+            function(x) {
+                console.log(x.id + " " + x.price + ", new price: " + (x.price - x.price * 0.15));
+
+            });
+
+        //изменяю цены в структуре данных
+        products.forEach(
+            function(x) {
+                x.price = x.price - x.price * 0.15;
+
+            });
+
+        console.log(' ');
+
+        console.log('-----------новые цены из структуры-------');
+        //вывожу данные из структуры посде внесения изменений
+        products.forEach(
+            function(x) {
+                console.log(x.id + " " + x.price);
+
+            });
+
+    </script>
+
+</body>
+
+</html>
