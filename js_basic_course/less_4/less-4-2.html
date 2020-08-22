@@ -95,6 +95,48 @@
             console.log(product);
         };
 
+
+        class Prod_3 {
+            constructor(name, price) {
+                this.name = name;
+                this.price = price;
+            };
+
+            discount_3(discount) {
+                this.price = this.price - this.price / 100 * discount;
+            };
+
+            make25PersentDiscount_3() {
+                this.price = this.price - this.price / 100 * 25;
+            };
+        }
+
+        const Products_3 = [
+            new Prod_3('name7', 300),
+            new Prod_3('name8', 300),
+            new Prod_3('name9', 300)
+        ]
+
+        //Вывод объектов
+        console.log("");
+        console.log("");
+        console.log("Объекты созданные в стиле es6");
+
+        for (let product of Products_3) {
+            console.log(product);
+        };
+        console.log("Скидка 20%:");
+
+        for (let product of Products_3) {
+            product.discount_3(20);
+            console.log(product);
+        };
+        console.log("Сделаем еще скидку 25%:");
+        for (let product of Products_3) {
+            product.make25PersentDiscount_3();
+            console.log(product);
+        };
+
     </script>
 
 </body>
