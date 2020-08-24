@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+
+        //задание 1.2 в стиле es5
+
+        function Post(author, text, date) {
+            this.author = author;
+            this.text = text;
+            this.date = date;
+        };
+
+        Post.prototype.edit = function(text) {
+            this.text = text;
+        };
+
+        const post1 = new Post('name1', 'hello world', 'date_1');
+
+        console.log(post1);
+        post1.edit('new hello world');
+        console.log(post1);
+
+        function AttachedPost(author, text, date) {
+            Post.call(this, author, text, date); //инициализация свойств
+            this.highlighted = false;
+
+        };
+
+        AttachedPost.prototype = Object.create(Post.prototype); //наследование методов
+        AttachedPost.prototype.constructor = AttachedPost; //восстановление конструктора
+
+        AttachedPost.prototype.makeTextHighlighted = function() {
+            this.highlighted = true;
+        };
+
+        const attach_1 = new AttachedPost('name2', 'hello world_2', 'date_2');
+
+
+
+        console.log(attach_1);
+        attach_1.edit('new hello world_2');
+        console.log(attach_1);
+
+        attach_1.makeTextHighlighted(); // вызов метода объекта AttachedPost makeTextHighlighted
+        console.log(attach_1.highlighted); //true
+
+    </script>
+
+</body>
+
+</html>
