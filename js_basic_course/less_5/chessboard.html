@@ -31,45 +31,35 @@
         console.log(mass_99);
 
 
-        let b = "ABCDIFGH";
+        let b = "ABCDIFGH"; //буквы для обозначения вертикальных линий на доске
 
-        console.log(b[0]);
+        //        console.log(b[0]);
         mass_99[0] = [];
-        mass_99[0][0] = "";
+        mass_99[0][0] = ""; //угловая ячейка  0/0 - пустая
 
         let count = 0;
-        for (let a in b) {
-
-            console.log(b[count] + ',');
-            mass_99[0][(count + 1)] = b[count];
+        for (let a in b) { // а - не используется, но цикл отработает нужное количество раз
+            mass_99[0][(count + 1)] = b[count]; //пишем буквы ABCDIFGH в массив , в первую строчку
             count++;
-
-
         }
-
 
         for (let i = 1; i < 9; i++) {
-
             mass_99[i] = [];
-            mass_99[i][0] = i;
+            mass_99[i][0] = i; //пишем в массив номера линий от 1 до 8
         }
 
-        //        for (let a in mass_99) {
-        //            console.log(mass_99[a]);
-        //        }
 
+        let color = 1; //идентификатор цвета ячейки 1 - белая, "-1" - черная
 
-        let color = 1;
-        let tmp = 0;
-        for (let a = 1; a < 9; a++) {
+        for (let a = 1; a < 9; a++) { //выбираем линию - это уже игровое поле, то что черно-белое
 
             if (a % 2 == 0) {
-                //начинаем с черной = минус 1
+                //начинаем с черной = минус 1  //по номеру линии: чет /нечет определяем какого цвета будет 1-я ячейка/клетка
                 color = -1;
             } else {
                 color = 1;
             }
-            for (let i = 1; i < 9; i++) {
+            for (let i = 1; i < 9; i++) { //записываем в ячейки одной линии идентифокатор цчета (1, -1)
                 mass_99[a][i] = color;
                 color = color * (-1);
             }
@@ -91,35 +81,41 @@
 
         // 1 - белая клетка, -1 - черная.
         // <tr><td>-1</td></tr>
+
+        //Далее формируем HTML вставку - таблицу на основе полученного массива
+
         let tar_lines = ``; // одна строчка - линия
         let tar_one = ``; //одна ячейка
-        let flag = 0;
+        let flag = 0; //нужен для определения работы со служебными ячейками(линиями) - нумерация линий и столбцов
 
-        for (let i in mass_99) {
+        for (let i in mass_99) { //проходим по 2-мерному массиву , i - номер горизонтальной линии доски (выбираем линию подряд от 0 до 9)
 
-            for (let k in mass_99[i]) {
+            for (let k in mass_99[i]) { // k - номер ячейки в линии (перебираем ячейки линии)
 
 
                 if (i == 0) {
-                    tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
-                    flag = 1;
+                    tar_one = tar_one + `<td>${mass_99[i][k]}</td>`; // тут собираем первый ряд(линию) доски с буквами
+                    flag = 1; //пока flag = 1 будет собираться только 1-й ряд
                 }
 
-                if (k == 0 && flag == 0) {
+                if (k == 0 && flag == 0) { // тут отлавливаем 1-ю ячейку каждой строки и пишем цифру от 1 до 8
                     tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
                 }
 
-                if (i > 0 && k > 0) {
+                if (i > 0 && k > 0) { // тут собираем основное черно-белое поле
                     if (mass_99[i][k] == -1) {
-                        tar_one = tar_one + `<td style="background-color: black;">${mass_99[i][k]}</td>`;
+                        //                        tar_one = tar_one + `<td style="background-color: black;">${mass_99[i][k]}</td>`;
+                        tar_one = tar_one + `<td style="background-color: black;"></td>`;
                     } else {
-                        tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
+                        //                        tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
+                        tar_one = tar_one + `<td></td>`;
                     }
-                    flag = 0;
+                    flag = 0; //flag=0 значит 1-й ряд собран и можно двигаться дальше - нумеровать линии от 1 до 8
                 }
             }
-            tar_lines = tar_lines + `<tr>${tar_one}</tr>`; // одна строчка - линия
-            tar_one = ``;
+            tar_lines = tar_lines + `<tr>${tar_one}</tr>`; // тут построчно собираем таблицу
+            tar_one = ``; //обнуляем строку, чтобы собирать новую
+            flag = 0;
         }
 
         console.log(tar_lines);
