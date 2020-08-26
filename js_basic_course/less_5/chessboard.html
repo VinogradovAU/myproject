@@ -93,10 +93,21 @@
         // <tr><td>-1</td></tr>
         let tar_lines = ``; // одна строчка - линия
         let tar_one = ``; //одна ячейка
+        let flag = 0;
 
         for (let i in mass_99) {
 
             for (let k in mass_99[i]) {
+
+
+                if (i == 0) {
+                    tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
+                    flag = 1;
+                }
+
+                if (k == 0 && flag == 0) {
+                    tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
+                }
 
                 if (i > 0 && k > 0) {
                     if (mass_99[i][k] == -1) {
@@ -104,6 +115,7 @@
                     } else {
                         tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
                     }
+                    flag = 0;
                 }
             }
             tar_lines = tar_lines + `<tr>${tar_one}</tr>`; // одна строчка - линия
