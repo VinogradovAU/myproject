@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="chessboard.css">
+</head>
+
+<body>
+    <table>
+        <!--
+        
+-->
+
+    </table>
+
+    <script>
+        "use strict";
+
+
+        let mass_99 = [];
+
+        for (let x in mass_99) {
+            for (let y = 0; y < 9; y++) {
+                mass_99[y] = y;
+
+            }
+
+        }
+        console.log(mass_99);
+
+
+        let b = "ABCDIFGH";
+
+        console.log(b[0]);
+        mass_99[0] = [];
+        mass_99[0][0] = "";
+
+        let count = 0;
+        for (let a in b) {
+
+            console.log(b[count] + ',');
+            mass_99[0][(count + 1)] = b[count];
+            count++;
+
+
+        }
+
+
+        for (let i = 1; i < 9; i++) {
+
+            mass_99[i] = [];
+            mass_99[i][0] = i;
+        }
+
+        //        for (let a in mass_99) {
+        //            console.log(mass_99[a]);
+        //        }
+
+
+        let color = 1;
+        let tmp = 0;
+        for (let a = 1; a < 9; a++) {
+
+            if (a % 2 == 0) {
+                //начинаем с черной = минус 1
+                color = -1;
+            } else {
+                color = 1;
+            }
+            for (let i = 1; i < 9; i++) {
+                mass_99[a][i] = color;
+                color = color * (-1);
+            }
+        }
+
+        for (let a in mass_99) {
+            console.log(mass_99[a]); // сгенерировали доску в массиве
+        }
+
+        //                    (9) ["", "A", "B", "C", "D", "I", "F", "G", "H"]
+        //chessboard.html:195 (9) [1, 1, -1, 1, -1, 1, -1, 1, -1]
+        //chessboard.html:195 (9) [2, -1, 1, -1, 1, -1, 1, -1, 1]
+        //chessboard.html:195 (9) [3, 1, -1, 1, -1, 1, -1, 1, -1]
+        //chessboard.html:195 (9) [4, -1, 1, -1, 1, -1, 1, -1, 1]
+        //chessboard.html:195 (9) [5, 1, -1, 1, -1, 1, -1, 1, -1]
+        //chessboard.html:195 (9) [6, -1, 1, -1, 1, -1, 1, -1, 1]
+        //chessboard.html:195 (9) [7, 1, -1, 1, -1, 1, -1, 1, -1]
+        //chessboard.html:195 (9) [8, -1, 1, -1, 1, -1, 1, -1, 1]
+
+        // 1 - белая клетка, -1 - черная.
+        // <tr><td>-1</td></tr>
+        let tar_lines = ``; // одна строчка - линия
+        let tar_one = ``; //одна ячейка
+
+        for (let i in mass_99) {
+
+            for (let k in mass_99[i]) {
+
+                if (i > 0 && k > 0) {
+                    if (mass_99[i][k] == -1) {
+                        tar_one = tar_one + `<td style="background-color: black;">${mass_99[i][k]}</td>`;
+                    } else {
+                        tar_one = tar_one + `<td>${mass_99[i][k]}</td>`;
+                    }
+                }
+            }
+            tar_lines = tar_lines + `<tr>${tar_one}</tr>`; // одна строчка - линия
+            tar_one = ``;
+        }
+
+        console.log(tar_lines);
+
+        let target = document.querySelector('table');
+        target.insertAdjacentHTML("afterbegin", tar_lines);
+
+    </script>
+</body>
+
+
+</html>

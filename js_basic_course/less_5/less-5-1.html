@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="less-5-1.css">
+
+</head>
+
+<body>
+    <!--    <div class="container">-->
+    <div class="modal" id="modal">
+        <div class="but">
+            <button class="close-button" id="close-button">Закрыть</button>
+        </div>
+        <div class="text">
+            <h2>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam, optio.</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus fuga, doloremque adipisci nisi odio quibusdam doloribus eos eaque atque assumenda voluptates sint esse, et consequuntur id aut vitae voluptatibus dolorum.</p>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modal-overlay"></div>
+
+    <button id="open-button" class="open-button">Открыть окно</button>
+
+    <!--    </div>-->
+    <script>
+        "use strict";
+        // модальное окно
+        var modal = document.querySelector("#modal"),
+            modalOverlay = document.querySelector("#modal-overlay"),
+            closeButton = document.querySelector("#close-button"),
+            openButton = document.querySelector("#open-button");
+        //        let modal = document.querySelector("#modal");
+        //        let modalOverlay = document.querySelector("#modal-overlay");
+        //        let closeButton = document.querySelector("#close-button");
+        //        let openButton = document.querySelector("#open-button");
+
+        closeButton.addEventListener("click", function() {
+            modal.classList.toggle("closed");
+            modalOverlay.classList.toggle("closed");
+        });
+
+        openButton.addEventListener("click", function() {
+            modal.classList.toggle("closed");
+            modalOverlay.classList.toggle("closed");
+        });
+
+    </script>
+</body>
+
+</html>
