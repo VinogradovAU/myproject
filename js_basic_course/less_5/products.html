@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="products.css">
+</head>
+
+<body>
+    <div class="container">
+    </div>
+
+    <script>
+        "use strict";
+
+
+        class prod {
+            constructor(ProdName, Image_src, ProdText) {
+                this.ProdName = ProdName;
+                this.Image_src = Image_src;
+                this.ProdText = ProdText;
+            }
+        }
+
+
+        const products = [
+            new prod("Холодильник", "https://brain.com.ua/static/images/prod_img/8/6/U0111486_3big.jpg", "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, quisquam."),
+            new prod("Телефонный аппарат", "https://sc02.alicdn.com/kf/HTB1q1SZXdfvK1RjSspfq6zzXFXa5.jpg", "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum illum natus, laborum."),
+            new prod("Телевизор", "https://img-new.cgtrader.com/items/851306/cdae3e80b0/cartoon-tv-3d-model-obj-3ds-fbx-c4d-dxf-dae.jpg", "Lorem ipsum dolor sit amet, consectetur.")
+
+        ]
+
+        const mass_prod = [];
+        let count = 0;
+        for (let pp of products) {
+
+            let target = `
+            <div class="product">
+            <div class="productName">${pp.ProdName}</div>
+            <div class="desc"><p>${pp.ProdText}<p></div>
+            <img src="${pp.Image_src}" width="300" height="350" alt="lorem">
+            <button id="but_${count}">Подробнее</button>
+        </div>
+        `;
+            count++;
+
+
+            console.log(pp);
+            mass_prod.push(target)
+
+        };
+
+
+
+        let cont_1 = document.getElementsByClassName('container');
+
+        for (let pp of mass_prod) {
+
+            cont_1[0].insertAdjacentHTML("afterbegin", pp);
+        };
+
+
+        //        let tar_but = document.querySelector('button');
+        //        tar_but.addEventListener('click', function(event) {
+        //            console.log('click');
+        //            console.dir(event);
+        //        });
+
+        cont_1[0].addEventListener('click', function(event) {
+            let target = event.target;
+            if (target.tagName == 'BUTTON') {
+                console.log(target);
+                console.log(target.previousElementSibling);
+                if (target.innerText == "Подробнее") {
+                    target.previousElementSibling.style.display = 'none';
+                    target.innerText = "Отмена";
+                    target.previousElementSibling.previousElementSibling.style.display = 'block';
+                } else {
+                    if (target.innerText == "Отмена") {
+                        console.log(target.previousElementSibling);
+                        console.log(target.previousElementSibling.style.display);
+                        target.previousElementSibling.style.display = 'block';
+                        target.innerText = "Подробнее";
+                        target.previousElementSibling.previousElementSibling.style.display = 'none';
+                    }
+                };
+
+
+            }
+        })
+
+    </script>
+
+
+</body>
+
+</html>
