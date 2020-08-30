@@ -88,6 +88,7 @@ let sli_start = {
             }
         }
 
+
         mass[num_on] = 1;
         mass[num_off] = 0;
     },
