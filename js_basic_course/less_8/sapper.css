@@ -1,7 +1,66 @@
+.container {
+    width: 600px;
+    height: 600px;
+    margin: 0 auto;
+}
+
+table {
+    /* убираем отступы между ячейками */
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
 tr {
     border: 1px solid black;
+
 }
 
 td {
+    width: 20px;
+    height: 20px;
     border: 1px solid black;
+
 }
+
+.bott {
+    width: 20px;
+    height: 20px;
+    border: 1px solid black;
+    text-align: center;
+    float: left;
+}
+
+#level1 {
+    background-color: red;
+}
+
+#level2 {
+    background-color: red;
+}
+
+#level3 {
+    background-color: red;
+
+}
+
+
+.menu {
+    width: 600px;
+    height: 30px;
+    margin: 0 auto;
+    float: none;
+}
+
+
+/* Ячейки с бомбами */
+.bomb {
+    background: url(/img/bomb.png);
+}
+
+.bomb img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Ячейки скрытая */
+.hid {}
