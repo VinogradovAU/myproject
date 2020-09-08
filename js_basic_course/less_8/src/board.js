@@ -335,8 +335,8 @@ class Board {
                     //в ячейку нужно добавить картинку бомбы img
                     let im = document.createElement("img"); //создаю дочерний элемент img для вставки картинки
                     im.setAttribute("src", "img/bomb.png");
-                    im.setAttribute("width", "30px");
-                    im.setAttribute("height", "30px");
+                    im.setAttribute("width", "28px");
+                    im.setAttribute("height", "28px");
                     el.appendChild(im);
                     el.style.backgroundColor = "white";
                     continue;
