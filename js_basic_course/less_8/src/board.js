@@ -3,7 +3,7 @@ class Board {
     constructor() {
         this.mapGame = document.getElementById('game'); //объект таблицы - игрового поля
 
-    };
+    }
 
 
     createMatrixGame(Size) {
@@ -22,11 +22,11 @@ class Board {
             }
             matrix[i] = row;
             row = [];
-        };
+        }
 
         console.log("00000Matrix: ", matrix);
         return matrix;
-    };
+    }
 
 
     randerBoard(params, bomb) {
@@ -69,25 +69,11 @@ class Board {
                 td.dataset.col = k.toString();
                 this.mapGame.appendChild(td);
 
-                //                if (this.matrix[i - 1][k - 1] == "bomb") { //если в матрице в такой же ячейки есть бомба, то и на поле ставим бомбу
-                //                    let im = document.createElement("img"); //заполняю игровое поле бомбами, добавляя картинку к тегу tr
-                //                    im.setAttribute("src", "img/bomb.png");
-                //                    im.setAttribute("width", "20px");
-                //                    im.setAttribute("height", "20px");
-                //                    td.appendChild(im);
-                //                } else {
-                //                    if (this.matrix[i - 1][k - 1] != "") {
-                //                        td.innerText = this.matrix[i - 1][k - 1];
-                //                    }
-                //                }
-
-
-
             }
             console.log("mapGame: ", this.mapGame);
             console.log("matrix:", this.matrix);
 
-        };
+        }
     }
 
 
@@ -108,7 +94,7 @@ class Board {
             }
         }
         return newMatrix;
-    };
+    }
 
     /*Метод получает на вход матрицу с бомбами
      * на выходе матрица с бомбами и с указанием в каждой свободной 
@@ -297,7 +283,7 @@ class Board {
         }
 
         return newMatrix;
-    };
+    }
 
 
 
@@ -319,7 +305,7 @@ class Board {
         }
 
         return None;
-    };
+    }
 
     //Отрисовываем поле после взрыва. Все данные ячеек берем из матрицы
 
@@ -349,12 +335,12 @@ class Board {
                 };
             }
         }
-    };
+    }
 
     //Отрисовать взорванную бомбу в ячейке row, col
     renderBoomBoom(row, col) {
         let el = this.getCellEl(row, col); //получили ячейку на HTML
         el.childNodes[0].attributes.src.nodeValue = "img/boooooom.png";
 
-    };
+    }
 }

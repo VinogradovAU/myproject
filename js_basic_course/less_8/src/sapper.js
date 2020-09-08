@@ -16,16 +16,15 @@ class start_code {
         });
 
 
-        menu.init(settings, board, bomb); //подготавливаем кнопки меню
+        menu.init(settings, board, bomb, game); //подготавливаем кнопки меню
         bomb.init(settings, board); //сгеренируем и поместим на игровое поле бомбы
         board.randerBoard(settings, bomb); //отрисуем поле
-        game.init(settings, board, bomb, menu);
+        game.init(settings, board, bomb, menu); //начнет игру
 
-    };
+    }
 
 
-};
-
+}
 
 window.addEventListener('load', function (e) {
 
@@ -33,4 +32,4 @@ window.addEventListener('load', function (e) {
 
     main.init(e);
 
-});
+})

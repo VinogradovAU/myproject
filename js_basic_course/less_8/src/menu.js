@@ -41,13 +41,13 @@ class Menu {
 
 
 
-    init(params, board, bomb) {
+    init(params, board, bomb, game) {
 
         this.params_gameLevel = params.newParams.levelGame; //params - это прилетает settings (levelGame и boardsize) 
         this.params = params; //сохраняем объект себе
         this.board = board; //сохраняем объект себе
         this.bomb = bomb; //сохраняем объект себе
-
+        this.game = game; //сохраняем объект себе
 
         this.ButtChangeStatusColor(this.params_gameLevel, this.butt1, this.butt2, this.butt3); //при запуске программы выставляет цвет кнопок в соответствии с параметрами setting
 
@@ -62,6 +62,7 @@ class Menu {
     //Меняем значение настроек settings номер уровня и пересчитываем количество бомб
 
     ChangeStatusColorButt1() {
+        this.game.setStatusPlaing(); /*начинаем игру*/
         this.ButtChangeStatusColor(1, this.butt1, this.butt2, this.butt3);
         this.params.init({
             boardSize: this.params.newParams.boardSize,
@@ -77,6 +78,7 @@ class Menu {
     //Обработчки нажания на кнопку 2 . Меняем цвет кнопки 1 на зеленый, а кнопки 1, 3 на белый
     //Меняем значение настроек settings номер уровня и пересчитываем количество бомб
     ChangeStatusColorButt2() {
+        this.game.setStatusPlaing(); /*начинаем игру*/
         this.ButtChangeStatusColor(2, this.butt1, this.butt2, this.butt3);
         this.params.init({
             boardSize: this.params.newParams.boardSize,
@@ -92,6 +94,7 @@ class Menu {
     //Обработчки нажания на кнопку 3 . Меняем цвет кнопки 1 на зеленый, а кнопки 1, 2 на белый
     //Меняем значение настроек settings номер уровня и пересчитываем количество бомб
     ChangeStatusColorButt3() {
+        this.game.setStatusPlaing(); /*начинаем игру*/
         this.ButtChangeStatusColor(3, this.butt1, this.butt2, this.butt3);
         this.params.init({
             boardSize: this.params.newParams.boardSize,

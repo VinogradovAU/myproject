@@ -44,27 +44,27 @@ class Bomb {
                 if (this.mass[i] == testNum) {
                     duble = true;
                     break;
-                };
-            };
+                }
+            }
 
 
             //дубль не найден в массиве, значит добавляем сгенерированное число в массив
             if (duble == false) {
                 this.mass.push(testNum);
-            };
+            }
 
             //если длина массива равна количеству бомб, тогда выходим из вечного цикла. сбор массива завершен
             if (this.mass.length == colBombs) {
                 break;
-            };
+            }
 
 
-        };
+        }
 
 
         return this.mass;
 
 
-    };
+    }
 
 }

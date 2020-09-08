@@ -7,19 +7,21 @@ class Game {
         this.board = board;
         this.bomb = bomb;
         this.menu = menu;
+        this.status = "plaing"; //статус игры - играем
+
 
         board.mapGame.addEventListener('click', event => this.cellClickHandler(event)); //устанавливаем обработчик для игрового поля для всех ячеек 
 
         menu.playBt.addEventListener('click', event => this.playBtClickHandler(event)); //устанавливаем обработчик для кнопки PLAY
-        console.log("game.init start");
+        //console.log("game.init start");
 
-    };
+    }
 
     playBtClickHandler(event) { //обработчик нажания кнопки play
-        this.setStatusPlaing; /*начинаем игру*/
+        this.setStatusPlaing(); /*начинаем игру*/
         //скрываем поле
 
-    };
+    }
 
     /*
     * Метод проверяет находится ли бомба в ячейке
@@ -37,52 +39,57 @@ class Game {
 
     cellClickHandler(event) {
 
-        if (this.isClickByCell(event)) { //если кликнули по ячейки
+        if (this.status == 'plaing') {
 
-            this.row = +event.target.attributes[0].value;
-            this.col = +event.target.attributes[1].value;
+            if (this.isClickByCell(event)) { //если кликнули по ячейки
 
-            //если в ячейке бомба
-            if (this.isBommInCell(this.row, this.col)) {
-                //Стоп игра
-                this.setStatusStopped;
+                this.row = +event.target.attributes[0].value;
+                this.col = +event.target.attributes[1].value;
 
-                //поменять кнопку PLAYING на RESTART
-                this.menu.playBt.style.backgroundColor = "red";
-                this.menu.playBt.innerText = "RESTART";
-                //.............
-                //Отрисовать все поле
-                this.board.rednerBoardAfterBooom(); //отрисуем поле из матрицы
+                //если в ячейке бомба
+                if (this.isBommInCell(this.row, this.col)) {
+                    //Стоп игра
+                    this.setStatusStopped();
 
-                //Отрисовать взорванную бомбу в ячейке row, col
-                this.board.renderBoomBoom(this.row, this.col); 
-                //............
+                    //поменять кнопку PLAYING на RESTART
+                    this.menu.playBt.style.backgroundColor = "red";
+                    this.menu.playBt.innerText = "RESTART";
+                    //.............
+                    //Отрисовать все поле
+                    this.board.rednerBoardAfterBooom(); //отрисуем поле из матрицы
 
-            } else {
-                console.log("Open Cell");
-                //открыть ячейку, отрисовать то, то есть в матрице
-                let tdElement = this.board.getCellEl(this.row, this.col); //получаем объект нужной нам ячейки в html коде
-                tdElement.innerText = this.board.matrix[this.row - 1][this.col - 1]; //записываем в эту ячейку собержимое такой же ячейки в матрице
-                tdElement.style.backgroundColor = "white";
+                    //Отрисовать взорванную бомбу в ячейке row, col
+                    this.board.renderBoomBoom(this.row, this.col);
+                    //............
+
+                } else {
+
+                    //открыть ячейку, отрисовать то, то есть в матрице
+                    let tdElement = this.board.getCellEl(this.row, this.col); //получаем объект нужной нам ячейки в html коде
+                    tdElement.innerText = this.board.matrix[this.row - 1][this.col - 1]; //записываем в эту ячейку собержимое такой же ячейки в матрице
+                    tdElement.style.backgroundColor = "white";
+                }
+
             }
-
+            console.log(event.target.attributes[0].value, event.target.attributes[1].value);
         }
 
-        console.log(event.target.attributes[0].value, event.target.attributes[1].value);
 
 
-    };
+
+    }
 
     isClickByCell(event) {
         return event.target.tagName === 'TD';
-    };
-
+    }
     setStatusStopped() {
         this.status = 'stopped';
-    };
+        console.log("status = stopped");
+    }
 
     setStatusPlaing() {
         this.status = 'plaing';
+        console.log("status = playing");
     }
 
 
