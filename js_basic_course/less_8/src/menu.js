@@ -6,6 +6,7 @@ class Menu {
         this.butt1 = document.getElementById("level1");
         this.butt2 = document.getElementById("level2");
         this.butt3 = document.getElementById("level3");
+        this.playBt = document.getElementById("play"); //объект кнопки play
     };
 
 
@@ -47,11 +48,13 @@ class Menu {
         this.board = board; //сохраняем объект себе
         this.bomb = bomb; //сохраняем объект себе
 
+
         this.ButtChangeStatusColor(this.params_gameLevel, this.butt1, this.butt2, this.butt3); //при запуске программы выставляет цвет кнопок в соответствии с параметрами setting
 
         this.butt1.addEventListener("click", this.ChangeStatusColorButt1.bind(this)); //назначаем обработчк нажатия на кнопки и прикручиваем (bind) объект menu к функции обработчику
         this.butt2.addEventListener("click", this.ChangeStatusColorButt2.bind(this)); //назначаем обработчк нажатия на кнопки и прикручиваем (bind) объект menu к функции
         this.butt3.addEventListener("click", this.ChangeStatusColorButt3.bind(this)); //назначаем обработчк нажатия на кнопки и прикручиваем (bind) объект menu к функции
+
 
     };
 
@@ -66,6 +69,8 @@ class Menu {
         });
         this.bomb.init(this.params, this.board);
         this.board.randerBoard(this.params, this.bomb);
+        this.playBt.style.backgroundColor = "gray";
+        this.playBt.innerText = "PALAING";
     };
 
 
@@ -79,6 +84,8 @@ class Menu {
         });
         this.bomb.init(this.params, this.board);
         this.board.randerBoard(this.params, this.bomb);
+        this.playBt.style.backgroundColor = "gray";
+        this.playBt.innerText = "PALAING";
     };
 
 
@@ -92,8 +99,9 @@ class Menu {
         });
         this.bomb.init(this.params, this.board);
         this.board.randerBoard(this.params, this.bomb);
+        this.playBt.style.backgroundColor = "gray";
+        this.playBt.innerText = "PALAING";
 
     };
-
 
 }
