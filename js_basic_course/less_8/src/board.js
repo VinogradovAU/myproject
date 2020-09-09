@@ -343,4 +343,395 @@ class Board {
         el.childNodes[0].attributes.src.nodeValue = "img/boooooom.png";
 
     }
+
+    /*метод отрисовывает(открывает) ячейки вокруг пустой
+     * на вход получает координаты пустой ячейки
+     */
+    openEmptyCell(row, col) {
+
+        let i = row - 1;
+        let k = col - 1;
+        let newMatrix = this.matrix;
+        let el;
+        let size = this.boardSize;
+
+        el = this.getCellEl(i + 1, k + 1); //находим нажатую ячейку
+        el.style.backgroundColor = "white"; //открываем нажатую ячейку
+
+
+        //ячейка 0.0
+        if (i == 0 && k == 0) {
+            el = this.getCellEl(i + 2, k + 1); //находим соседнюю ячейку
+            el.style.backgroundColor = "white"; //открываем соседнюю ячейку
+            el.innerText = newMatrix[i + 1][k]; //вписываем данные в соседнюю ячейку
+
+            if (newMatrix[i + 1][k] == "") {
+                this.openEmptyCell(i + 2, k + 1); //если соседняя ячейка пуская, то вызываем для нее функцию открытия вокруг рекурсивно
+            };
+
+            el = this.getCellEl(i + 2, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k + 1];
+
+            if (newMatrix[i + 1][k + 1] == "") {
+                this.openEmptyCell(i + 2, k + 2);
+            };
+
+            el = this.getCellEl(i + 1, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k + 1];
+
+            if (newMatrix[i][k + 1] == "") {
+                this.openEmptyCell(i + 1, k + 2);
+            };
+        };
+
+        //ячейки вдоль горизонтальной верхней линии
+        if (i == 0 && k > 0 && k < (size - 1)) {
+
+            el = this.getCellEl(i + 1, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k - 1];
+
+            if (newMatrix[i][k - 1] == "") {
+                this.openEmptyCell(i + 1, k);
+            };
+
+            el = this.getCellEl(i + 1, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k + 1];
+
+            if (newMatrix[i][k + 1] == "") {
+                this.openEmptyCell(i + 1, k + 2);
+            };
+
+
+            el = this.getCellEl(i + 2, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k - 1];
+
+            if (newMatrix[i + 1][k - 1] == "") {
+                this.openEmptyCell(i + 2, k);
+            };
+
+
+            el = this.getCellEl(i + 2, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k + 1];
+
+            if (newMatrix[i + 1][k + 1] == "") {
+                this.openEmptyCell(i + 2, k + 2);
+            };
+
+
+            el = this.getCellEl(i + 2, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k];
+
+            if (newMatrix[i + 1][k] == "") {
+                this.openEmptyCell(i + 2, k + 1);
+            };
+        };
+
+        //ячейка size.size ( правый верхний угол)
+        if (i == 0 && k == (size - 1)) {
+
+
+            el = this.getCellEl(i + 1, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k - 1];
+
+            if (newMatrix[i][k - 1] == "") {
+                this.openEmptyCell(i + 1, k);
+            };
+
+            el = this.getCellEl(i + 2, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k];
+
+            if (newMatrix[i + 1][k] == "") {
+                this.openEmptyCell(i + 2, k + 1);
+            };
+
+
+            el = this.getCellEl(i + 2, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k - 1];
+
+            if (newMatrix[i + 1][k - 1] == "") {
+                this.openEmptyCell(i + 2, k);
+            };
+        };
+
+        //ячейки вдоль вертикальной линии правая крайняя сверху вниз
+        if (i > 0 && i < (size - 1) && k == (size - 1)) {
+
+
+            el = this.getCellEl(i, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k];
+
+            if (newMatrix[i - 1][k] == "") {
+                this.openEmptyCell(i, k + 1);
+            };
+
+
+            el = this.getCellEl(i + 2, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k];
+
+            if (newMatrix[i + 1][k] == "") {
+                this.openEmptyCell(i + 2, k + 1);
+            };
+
+
+            el = this.getCellEl(i, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k - 1];
+
+            if (newMatrix[i - 1][k - 1] == "") {
+                this.openEmptyCell(i, k);
+            };
+
+
+            el = this.getCellEl(i + 2, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k - 1];
+
+            if (newMatrix[i + 1][k - 1] == "") {
+                this.openEmptyCell(i + 2, k);
+            };
+
+
+            el = this.getCellEl(i + 1, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k - 1];
+
+            if (newMatrix[i][k - 1] == "") {
+                this.openEmptyCell(i + 1, k);
+            };
+        };
+
+        //ячейка size.size ( правый нижнгол)
+        if (i == (size - 1) && k == (size - 1)) {
+
+            el = this.getCellEl(i, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k] == "") {
+                this.openEmptyCell(i, k + 1);
+            };
+
+
+            el = this.getCellEl(i + 1, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k - 1];
+
+            if (newMatrix[i][k - 1] == "") {
+                this.openEmptyCell(i + 1, k);
+            };
+
+            el = this.getCellEl(i, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k - 1];
+
+            if (newMatrix[i - 1][k - 1] == "") {
+                this.openEmptyCell(i, k);
+            };
+        };
+
+        //ячейки вдоль горизонтальной нижний линии
+        if (i == (size - 1) && k > 0 && k < (size - 1)) {
+
+
+            el = this.getCellEl(i + 1, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k - 1];
+
+            if (newMatrix[i][k - 1] == "") {
+                this.openEmptyCell(i + 1, k);
+            };
+
+            el = this.getCellEl(i + 1, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k + 1];
+
+            if (newMatrix[i][k + 1] == "") {
+                this.openEmptyCell(i + 1, k + 2);
+            };
+
+            el = this.getCellEl(i, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k - 1];
+
+            if (newMatrix[i - 1][k - 1] == "") {
+                this.openEmptyCell(i, k);
+            };
+
+
+            el = this.getCellEl(i, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k + 1] == "") {
+                this.openEmptyCell(i, k + 2);
+            };
+
+            el = this.getCellEl(i + 2, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k + 1];
+
+            if (newMatrix[i - 1][k] == "") {
+                this.openEmptyCell(i + 1, k + 1);
+            };
+        };
+
+
+        //ячейка size.0 (левый нижний угол)
+        if (i == (size - 1) && k == 0) {
+
+            el = this.getCellEl(i, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k] == "") {
+                this.openEmptyCell(i, k + 1);
+            };
+
+            el = this.getCellEl(i + 1, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k + 1];
+
+            if (newMatrix[i][k + 1] == "") {
+                this.openEmptyCell(i + 1, k + 2);
+            };
+
+            el = this.getCellEl(i, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k + 1] == "") {
+                this.openEmptyCell(i2);
+            };
+        };
+
+
+        //ячейки вдоль вертикальной линии  крайняя левая сверху вниз
+        if (i > 0 && i < (size - 1) && k == 0) {
+
+
+            el = this.getCellEl(i, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k] == "") {
+                this.openEmptyCell(i, k + 1);
+            };
+
+            el = this.getCellEl(i + 2, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k];
+
+            if (newMatrix[i + 1][k] == "") {
+                this.openEmptyCell(i + 2, k + 1);
+            };
+
+            el = this.getCellEl(i, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k + 1] == "") {
+                this.openEmptyCell(i, k + 2);
+            };
+
+            el = this.getCellEl(i + 2, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k + 1];
+
+            if (newMatrix[i + 1][k + 1] == "") {
+                this.openEmptyCell(i + 2, k + 2);
+            };
+
+            el = this.getCellEl(i + 1, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k + 1];
+
+            if (newMatrix[i][k + 1] == "") {
+                this.openEmptyCell(i + 1, k + 2);
+            };
+        };
+
+        //ячейки внутри поля без крайних линий по бокам и с верху(ячейки вокруг которых 8 клеток)
+        if (i > 0 && i < (size - 1) && k > 0 && k < (size - 1)) {
+
+            el = this.getCellEl(i, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k];
+
+            if (newMatrix[i - 1][k] == "") {
+                this.openEmptyCell(i, k + 1);
+            };
+
+            el = this.getCellEl(i + 2, k + 1);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k];
+
+            if (newMatrix[i + 1][k] == "") {
+                this.openEmptyCell(i + 2, k + 1);
+            };
+
+            el = this.getCellEl(i, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k - 1];
+
+            if (newMatrix[i - 1][k - 1] == "") {
+                this.openEmptyCell(i, k);
+            };
+
+            el = this.getCellEl(i, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i - 1][k + 1];
+
+            if (newMatrix[i - 1][k + 1] == "") {
+                this.openEmptyCell(i, k + 2);
+            };
+
+            el = this.getCellEl(i + 1, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k + 1];
+
+            if (newMatrix[i][k + 1] == "") {
+                this.openEmptyCell(i + 1, k + 2);
+            };
+
+            el = this.getCellEl(i + 1, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i][k - 1];
+
+            if (newMatrix[i][k - 1] == "") {
+                this.openEmptyCell(i + 1, k);
+            };
+
+            el = this.getCellEl(i + 2, k);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k - 1];
+
+            if (newMatrix[i + 1][k - 1] == "") {
+                this.openEmptyCell(i + 2, k);
+            };
+
+            el = this.getCellEl(i + 2, k + 2);
+            el.style.backgroundColor = "white";
+            el.innerText = newMatrix[i + 1][k + 1];
+
+            if (newMatrix[i + 1][k + 1] == "") {
+                this.openEmptyCell(i + 2, k + 2);
+            };
+
+
+
+
+        }
+    }
 }

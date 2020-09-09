@@ -53,7 +53,7 @@ class Game {
 
                     //поменять кнопку PLAYING на RESTART
                     this.menu.playBt.style.backgroundColor = "red";
-                    this.menu.playBt.innerText = "RESTART";
+                    this.menu.playBt.innerText = "<<-----";
                     //.............
                     //Отрисовать все поле
                     this.board.rednerBoardAfterBooom(); //отрисуем поле из матрицы
@@ -64,9 +64,14 @@ class Game {
 
                 } else {
 
-                    //открыть ячейку, отрисовать то, то есть в матрице
+                    //открыть ячейку, отрисовать то, что есть в матрице
                     let tdElement = this.board.getCellEl(this.row, this.col); //получаем объект нужной нам ячейки в html коде
                     tdElement.innerText = this.board.matrix[this.row - 1][this.col - 1]; //записываем в эту ячейку собержимое такой же ячейки в матрице
+                    if (tdElement.innerText == "") {
+                        console.log("пустая клетка");
+
+                        this.board.openEmptyCell(this.row, this.col); //открыть клетки вокруг пустой
+                    }
                     tdElement.style.backgroundColor = "white";
                 }
 
