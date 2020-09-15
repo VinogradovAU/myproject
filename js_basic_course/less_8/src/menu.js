@@ -7,6 +7,9 @@ class Menu {
         this.butt2 = document.getElementById("level2");
         this.butt3 = document.getElementById("level3");
         this.playBt = document.getElementById("play"); //объект кнопки play
+        this.info_countWin_cell = document.getElementById('info'); //объект на игровом поле для вывода информации
+        this.uwin = document.getElementById("uwin");
+
     };
 
 
@@ -38,16 +41,14 @@ class Menu {
 
     };
 
-
-
-
-    init(params, board, bomb, game) {
+    init(params, board, bomb, game, sapper) {
 
         this.params_gameLevel = params.newParams.levelGame; //params - это прилетает settings (levelGame и boardsize) 
-        this.params = params; //сохраняем объект себе
-        this.board = board; //сохраняем объект себе
-        this.bomb = bomb; //сохраняем объект себе
-        this.game = game; //сохраняем объект себе
+        this.params = params; //получаем ссылку на объект
+        this.board = board; //получаем ссылку на объект
+        this.bomb = bomb; //получаем ссылку на объект
+        this.game = game; //получаем ссылку на объект
+        this.sapper = sapper; //получаем ссылку на объект
 
         this.ButtChangeStatusColor(this.params_gameLevel, this.butt1, this.butt2, this.butt3); //при запуске программы выставляет цвет кнопок в соответствии с параметрами setting
 
@@ -68,10 +69,15 @@ class Menu {
             boardSize: this.params.newParams.boardSize,
             levelGame: 1
         });
+
         this.bomb.init(this.params, this.board);
         this.board.randerBoard(this.params, this.bomb);
         this.playBt.style.backgroundColor = "gray";
-        this.playBt.innerText = "PALAING";
+        this.playBt.innerText = "PLAING";
+        this.params.countWin = this.params.newParams.boardSize * this.params.newParams.boardSize - this.params.bombs;
+        this.info_countWin_cell.innerText = this.params.countWin;
+
+        //this.sapper.init();
     };
 
 
@@ -87,7 +93,10 @@ class Menu {
         this.bomb.init(this.params, this.board);
         this.board.randerBoard(this.params, this.bomb);
         this.playBt.style.backgroundColor = "gray";
-        this.playBt.innerText = "PALAING";
+        this.playBt.innerText = "PLAING";
+        this.params.countWin = this.params.newParams.boardSize * this.params.newParams.boardSize - this.params.bombs;
+        this.info_countWin_cell.innerText = this.params.countWin;
+        //this.sapper.init();
     };
 
 
@@ -103,7 +112,10 @@ class Menu {
         this.bomb.init(this.params, this.board);
         this.board.randerBoard(this.params, this.bomb);
         this.playBt.style.backgroundColor = "gray";
-        this.playBt.innerText = "PALAING";
+        this.playBt.innerText = "PLAING";
+        this.params.countWin = this.params.newParams.boardSize * this.params.newParams.boardSize - this.params.bombs;
+        this.info_countWin_cell.innerText = this.params.countWin;
+        //this.sapper.init();
 
     };
 

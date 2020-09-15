@@ -4,8 +4,8 @@ class Bomb {
         this.x = null;
         this.y = null;
     }
-    
-    
+
+
     /**
      * Метод получает другие игровые объекты, которые нужны ему
      * для работы.
@@ -32,7 +32,7 @@ class Bomb {
         this.boardSize = boardSize;
         this.mass = [];
         let testNum = 0;
-        let duble = false; //признак отсутствия будля рандомного числа в массиве
+        let duble = false; //признак отсутствия дуубля рандомного числа в массиве
 
         while (true) {
 
